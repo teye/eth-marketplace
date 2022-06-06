@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 
 /**
@@ -24,6 +25,8 @@ error TokenListed(address tokenAddress, uint256 tokenId);
  * Referenced from https://blog.chain.link/how-to-build-an-nft-marketplace-with-hardhat-and-solidity/
  */
 contract Marketplace is ReentrancyGuard, Ownable {
+    using Counters for Counters.Counter;
+    Counters.Counter public _numNFTListed;
 
     struct Listing {
         address tokenAddress;
@@ -33,8 +36,8 @@ contract Marketplace is ReentrancyGuard, Ownable {
     }
 
     // events
-    event NFTListed();
-    event NFTBought();
+    event NFTListed(address indexed _from, address indexed _tokenAddress, uint256 tokenId);
+    event NFTBought(address indexed _from, address indexed _tokenAddress, uint256 tokenId);
     event ListingUpdated(address indexed _from, address indexed _tokenAddress, uint256 tokenId);
     event NFTDeListed(address indexed _from, address indexed _tokenAddress, uint256 tokenId);
 
@@ -87,8 +90,9 @@ contract Marketplace is ReentrancyGuard, Ownable {
         if (price <= 0) {
             revert PriceLessThanZero();
         }
+        _numNFTListed.increment();
         salesListings[tokenAddress][tokenId] = Listing(tokenAddress, msg.sender, tokenId, price);
-        emit NFTListed();
+        emit NFTListed(msg.sender, tokenAddress, tokenId);
     }
 
     /**
@@ -110,8 +114,9 @@ contract Marketplace is ReentrancyGuard, Ownable {
 
         // delete entry first then transfer NFT to buyer
         delete salesListings[tokenAddress][tokenId];
+        _numNFTListed.decrement();
         IERC721(tokenAddress).safeTransferFrom(listedNFT.seller, msg.sender, tokenId);
-        emit NFTBought();
+        emit NFTBought(msg.sender, tokenAddress, tokenId);
     }
 
     /**
@@ -144,6 +149,7 @@ contract Marketplace is ReentrancyGuard, Ownable {
         isListed(tokenAddress, tokenId)
         isTokenOwner(tokenAddress, tokenId)
     {
+        _numNFTListed.decrement();
         delete salesListings[tokenAddress][tokenId];
         emit NFTDeListed(msg.sender, tokenAddress, tokenId);
     }
