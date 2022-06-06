@@ -42,7 +42,8 @@ contract Marketplace is ReentrancyGuard, Ownable {
     event NFTDeListed(address indexed _from, address indexed _tokenAddress, uint256 tokenId);
 
     // state variables
-    // seller -> (sales_id -> Listing) ?
+    // to get the list of NFT sold by owner address; we should store the data in some offchain database during the sell process
+    // otherwise we can also set salesListings as public and read the entire mapping
     mapping(address => mapping(uint256 => Listing)) private salesListings;  // nft -> (token_id -> (seller, price))
     mapping(address => uint256) private salesProceeds;                      // seller -> profits
 
@@ -175,10 +176,6 @@ contract Marketplace is ReentrancyGuard, Ownable {
     function getListing(address tokenAddress, uint256 tokenId) external view returns (Listing memory) {
         return salesListings[tokenAddress][tokenId];
     }
-
-    // function getListingsByOwner() {
-
-    // }
 
     /** 
      * @notice retrieve the sales profits
