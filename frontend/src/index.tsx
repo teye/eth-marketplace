@@ -1,18 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import LayoutDefault from './components/layout';
+import Explore from './components/explore';
+import Profile from './components/profile';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <LayoutDefault>
-      <App />
-    </LayoutDefault>
+    <BrowserRouter>
+      <LayoutDefault>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      </LayoutDefault>
+    </BrowserRouter>
   </React.StrictMode>
 );
 

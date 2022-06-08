@@ -12,7 +12,7 @@ function LandingCard(props: Props) {
     } = props;
 
     return (
-        <div className={`rounded-xl shadow-md h-80 w-80 ${classNames}`}>
+        <div className={`rounded-xl shadow-lg h-80 w-80 ${classNames}`}>
         <img 
             src={image} 
             alt="landing" 
