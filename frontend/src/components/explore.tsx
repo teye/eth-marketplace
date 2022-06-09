@@ -76,9 +76,10 @@ function Explore() {
                         {
                             data.map((item, index) => {
                                 return (
-                                    <Link to={`/token/${item.tokenAddress}:${item.tokenId}`}>
+                                    <Link 
+                                        key={index}
+                                        to={`/token/${item.tokenAddress}:${item.tokenId}`}>
                                         <ShopCard 
-                                            key={index}
                                             tokenId={`${item.tokenId}`}
                                             price={item.price}
                                         />

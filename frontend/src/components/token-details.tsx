@@ -12,6 +12,7 @@ const fetchNFTDetatils = async (
 ) => {
     let tokenAddress = '';
     let tokenId = '';
+    let seller = '';
 
     const assetQueryArray = assetQuery?.split(":") ?? [];
 
@@ -26,7 +27,8 @@ const fetchNFTDetatils = async (
             let listing = await deployedMP.getListing(_tokenAddress, _tokenId);
             if (listing && listing.tokenAddress !== "0x0000000000000000000000000000000000000000") {
                 tokenAddress = listing.tokenAddress;
-                tokenId = listing.tokenId;
+                tokenId = `${listing.tokenId}`;
+                seller = listing.seller;
             }
         } catch (e) {
             console.error(e);
@@ -35,7 +37,8 @@ const fetchNFTDetatils = async (
 
     return {
         tokenAddress,
-        tokenId
+        tokenId,
+        seller
     }
 }
 
@@ -54,9 +57,22 @@ function TokenDetails() {
     }, [data, navigate]);
     
     return (
-        <div>
-            <h1>Token Details</h1>
-            <p>{assetQuery}</p>
+        <div className="container mx-auto">
+            {
+                !data ?
+                <p>Loading</p>
+                :
+                <div className="grid grid-cols-1 md:grid-cols-2">
+                    {/* nft image */}
+                    <div className="rounded-xl bg-slate-800 h-[400px] w-[400px]"></div>
+                    {/* nft details */}
+                    <div className="bg-blue-400">
+                        <h1>Token Name #{data.tokenId}</h1>
+                        <div>Owned by {data.seller.toLowerCase()}</div>
+                        {/* add Buy button */}
+                    </div>
+                </div>
+            }
         </div>
     );
 }
