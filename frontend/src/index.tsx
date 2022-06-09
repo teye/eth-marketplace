@@ -1,12 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import LayoutDefault from './components/layout';
 import Explore from './components/explore';
 import Profile from './components/profile';
+import TokenDetails from './components/token-details';
+import Error from './components/error';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -19,6 +21,9 @@ root.render(
           <Route path="/" element={<App />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/token/:assetQuery" element={<TokenDetails />} />
+          <Route path="/error" element={<Error />} />
+          <Route path="*" element={<Navigate to="/error" replace />} />
         </Routes>
       </LayoutDefault>
     </BrowserRouter>

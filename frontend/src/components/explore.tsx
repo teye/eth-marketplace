@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import useSWR from 'swr';
 import { MARKETPLACE_ABI } from "../abi/marketplaceABI";
 import ShopCard from "./shop-card";
@@ -71,14 +72,17 @@ function Explore() {
                     <p>No NFTs listed yet.</p>
                     :
 
-                    <div className="grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-20 gap-y-8 mb-8">
                         {
                             data.map((item, index) => {
                                 return (
-                                    <ShopCard 
-                                        tokenId={`${item.tokenId}`}
-                                        price={item.price}
-                                    />
+                                    <Link to={`/token/${item.tokenAddress}:${item.tokenId}`}>
+                                        <ShopCard 
+                                            key={index}
+                                            tokenId={`${item.tokenId}`}
+                                            price={item.price}
+                                        />
+                                    </Link>
                                 )
                             })
                         }
