@@ -56,6 +56,7 @@ function TokenDetails() {
     const { data, error } = useSWR([`swr_fetch_nft_details`, marketplaceAddress, assetQuery], fetchNFTDetatils);
     
     const userState = useAppSelector((state) => state.user);
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         if (data && (!data?.tokenAddress || !data.tokenId)) {
