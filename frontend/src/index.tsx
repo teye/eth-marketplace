@@ -9,24 +9,29 @@ import Explore from './components/explore';
 import Profile from './components/profile';
 import TokenDetails from './components/token-details';
 import Error from './components/error';
+import { Provider } from 'react-redux';
+import { store } from './store/store';
+
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <LayoutDefault>
-        <Routes>
-          <Route path="/" element={<App />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/token/:assetQuery" element={<TokenDetails />} />
-          <Route path="/error" element={<Error />} />
-          <Route path="*" element={<Navigate to="/error" replace />} />
-        </Routes>
-      </LayoutDefault>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <LayoutDefault>
+          <Routes>
+            <Route path="/" element={<App />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/token/:assetQuery" element={<TokenDetails />} />
+            <Route path="/error" element={<Error />} />
+            <Route path="*" element={<Navigate to="/error" replace />} />
+          </Routes>
+        </LayoutDefault>
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>
 );
 
