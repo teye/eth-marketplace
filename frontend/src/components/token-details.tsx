@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 import useSWR from "swr";
 import { MARKETPLACE_ABI } from "../abi/marketplaceABI";
 import { useAppSelector } from "../store/hooks";
+import toast from "react-hot-toast";
 
 
 const fetchNFTDetatils = async (
@@ -76,17 +77,18 @@ function TokenDetails() {
     ) => {
         if (!userState.isConnected) {
             console.error("Please connect wallet to continue.");
+            toast.error("Please connect wallet to continue.");
             return;
         }
 
-        console.log(price);
-
-        // TODO: check user balance
         provider = ethers.getDefaultProvider("http://localhost:8545");
 
+        // check user balance
         const userBal = await provider.getBalance(userState.wallet);
+        
         if (ethers.BigNumber.from(userBal).lt(ethers.BigNumber.from(price))) {
             console.error(`Insufficient balance; Require ${ethers.utils.formatEther(price)} ETH; Please top up wallet.`);
+            toast.error(`Insufficient balance; Require ${ethers.utils.formatEther(price)} ETH; Please top up wallet.`);
             return;
         }
 
@@ -119,7 +121,7 @@ function TokenDetails() {
                     <div className="rounded-xl bg-slate-800 h-[400px] w-[400px]"></div>
                     {/* nft details */}
                     <div className="p-4">
-                        <h1>Token Name #{data.tokenId}</h1>
+                        <h1 className="font-semibold text-xl">Token Name #{data.tokenId}</h1>
                         <div className="text-gray-500 text-[0.9em]">
                             Owned by <span className="text-blue-500">{data.seller.toLowerCase()}</span>
                         </div>
@@ -128,9 +130,9 @@ function TokenDetails() {
                             <div className="font-bold text-3xl text-neutral-800">{ethers.utils.formatEther(data.price)} ETH</div>
                         </div>
                         <button 
-                            className="bg-black font-bold text-sm text-white py-2 px-4 rounded mr-4"
+                            className="bg-black font-bold text-sm text-white py-2 px-6 rounded mr-4"
                             onClick={() => onBuy(data.tokenAddress, data.tokenId, data.price)}>
-                            Buy Now
+                            Buy now
                         </button>
                     </div>
                 </div>

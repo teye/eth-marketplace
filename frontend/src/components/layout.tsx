@@ -1,4 +1,5 @@
 import React from "react";
+import { Toaster } from "react-hot-toast";
 import Navbar from "./navbar";
 
 type Props = {
@@ -14,6 +15,10 @@ function LayoutDefault(props: Props) {
         <div className="max-w-full">
             <Navbar />
             { children }
+            <Toaster 
+                position="top-center"
+                reverseOrder={false}
+            />
         </div>
     );
 }
