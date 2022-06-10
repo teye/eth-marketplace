@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ethers } from "ethers";
-import { UPDATE_IS_CONNECTED, UPDATE_WALLET } from "../store/userSlice";
+import { USER_RESET, UPDATE_IS_CONNECTED, UPDATE_WALLET } from "../store/userSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 
 
@@ -30,6 +30,10 @@ function Navbar() {
           .catch((e) => console.error(e));
     }
 
+    const onDisconnect = () => {
+        dispatch(USER_RESET());
+    }
+
     return (
         <nav className="bg-white z-100 max-w-full">
             <div className="mx-auto p-4">
@@ -50,11 +54,21 @@ function Navbar() {
                                     </Link>
                                 </li>
                                 <li>
-                                    <button 
-                                        className="bg-black text-white py-2 px-4 rounded mr-4"
-                                        onClick={() => onConnectWallet()}>
-                                        Connect MetaMask
-                                    </button>
+                                    {
+                                        !userState.isConnected 
+                                        ?
+                                        <button 
+                                            className="bg-black text-white py-2 px-4 rounded mr-4"
+                                            onClick={() => onConnectWallet()}>
+                                            Connect MetaMask
+                                        </button>
+                                        :
+                                        <button 
+                                            className="bg-black text-white py-2 px-4 rounded mr-4"
+                                            onClick={() => onDisconnect()}>
+                                            Disconnect Wallet
+                                        </button>
+                                    }
                                 </li>
                                 {
                                     userState.wallet &&

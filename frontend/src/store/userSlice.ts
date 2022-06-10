@@ -13,13 +13,18 @@ export const userSlice = createSlice({
         UPDATE_IS_CONNECTED: (state, action) => {
             state.isConnected = action.payload
         },
+        USER_RESET: (state) => {
+            state.wallet = ""
+            state.isConnected = false
+        },
     },
 })
 
 
 export const { 
     UPDATE_IS_CONNECTED,
-    UPDATE_WALLET 
+    UPDATE_WALLET,
+    USER_RESET 
 } = userSlice.actions;
 
 export default userSlice.reducer;
