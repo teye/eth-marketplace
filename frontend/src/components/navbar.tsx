@@ -35,52 +35,44 @@ function Navbar() {
     }
 
     return (
-        <nav className="bg-white z-100 max-w-full">
-            <div className="mx-auto p-4">
-                <div className="flex justify-between items-center bg-green-400">
-                    <div className="flex space-x-7">
-                        {/* website logo & name */}
-                        <div className='logo px-2 py-0 rounded-md'>
-                            <Link to={`/`}>
-                                <h1 className="font-kanit text-[1.2em] font-bold uppercase">NFT BAY</h1>
-                            </Link>
+        <nav>
+            <ul className="bg-white py-4 flex m-0 justify-end items-center">
+                <li className="mr-auto ml-[2rem]">
+                    <Link to={`/`}>
+                        <div className="logo px-2 rounded-md">
+                            <h1 className="font-kanit text-[1.2em] font-bold uppercase">NFT BAY</h1>
                         </div>
-                        {/* links */}
-                        <div>
-                            <ul className="inline-flex text-[0.85em] text-slate font-bold font-kanit uppercase">
-                                <li className="tracking-wider mr-6">
-                                    <Link to={`/explore`}>
-                                        Explore
-                                    </Link>
-                                </li>
-                                <li>
-                                    {
-                                        !userState.isConnected 
-                                        ?
-                                        <button 
-                                            className="bg-black text-white py-2 px-4 rounded mr-4"
-                                            onClick={() => onConnectWallet()}>
-                                            Connect MetaMask
-                                        </button>
-                                        :
-                                        <button 
-                                            className="bg-black text-white py-2 px-4 rounded mr-4"
-                                            onClick={() => onDisconnect()}>
-                                            Disconnect Wallet
-                                        </button>
-                                    }
-                                </li>
-                                {
-                                    userState.wallet &&
-                                    <li className="lowercase">
-                                        <div>{userState.wallet}</div>
-                                    </li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    </Link>
+                </li>
+                <li className="nav-item font-kanit text-sm text-gray-700 hover:text-black tracking-wider uppercase">
+                    <Link to={`/explore`}>
+                        Explore
+                    </Link>
+                </li>
+                <li className="font-kanit text-sm ml-auto mr-[2rem]">
+                    {
+                        !userState.isConnected 
+                        ?
+                        <button 
+                            className="bg-black text-white py-2 px-4 rounded mr-4"
+                            onClick={() => onConnectWallet()}>
+                            Connect MetaMask
+                        </button>
+                        :
+                        <button 
+                            className="bg-black text-white py-2 px-4 rounded mr-4"
+                            onClick={() => onDisconnect()}>
+                            Disconnect Wallet
+                        </button>
+                    }
+                </li>
+                {
+                    userState.wallet &&
+                    <li className="nav-item font-kanit text-sm lowercase">
+                        <div>{userState.wallet}</div>
+                    </li>
+                }
+            </ul>
         </nav>
     )
 }
