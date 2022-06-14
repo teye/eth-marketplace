@@ -5,6 +5,8 @@ import useSWR from "swr";
 import { MARKETPLACE_ABI } from "../abi/marketplaceABI";
 import { useAppSelector } from "../store/hooks";
 import toast from "react-hot-toast";
+import BuyModal from "../modals/buy-modal";
+import { PROGRESS } from "../constants";
 
 
 const fetchNFTDetatils = async (
@@ -56,13 +58,24 @@ function TokenDetails() {
     const { data, error } = useSWR([`swr_fetch_nft_details`, marketplaceAddress, assetQuery], fetchNFTDetatils);
     
     const userState = useAppSelector((state) => state.user);
-    const [open, setOpen] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
+    const [progress, setProgress] = useState("");
+    const [txHash, setTxHash] = useState("");
 
     useEffect(() => {
         if (data && (!data?.tokenAddress || !data.tokenId)) {
             navigate("/error", { replace: true })
         }
     }, [data, navigate]);
+
+    const onCloseModal = () => {
+        // delay for the animation to close the modal
+        setOpenModal(false);
+        setTimeout(() => {
+            setProgress("");
+            setTxHash("");
+        }, 200);
+    };
 
     /**
      * buy an NFT
@@ -95,6 +108,8 @@ function TokenDetails() {
 
         const signer = provider.getSigner();
 
+        setOpenModal(true);
+
         const deployed = new ethers.Contract(marketplaceAddress, MARKETPLACE_ABI, signer);
 
         try {
@@ -106,8 +121,11 @@ function TokenDetails() {
                 }
             );
             console.log("tx: ", tx.hash);
+            setProgress(PROGRESS.CONFIRM);
+            setTxHash(tx.hash);
         } catch (e) {
             console.error(e);
+            onCloseModal();
         }
     }
     
@@ -138,6 +156,12 @@ function TokenDetails() {
                     </div>
                 </div>
             }
+            <BuyModal
+                openModal={openModal}
+                progress={progress}
+                txHash={txHash}
+                onClose={onCloseModal}
+            />
         </div>
     );
 }
