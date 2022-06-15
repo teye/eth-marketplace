@@ -11,6 +11,7 @@ import TokenDetails from './components/token-details';
 import Error from './components/error';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
+import CreateNFT from './components/create-nft';
 
 
 const root = ReactDOM.createRoot(
@@ -23,6 +24,7 @@ root.render(
         <LayoutDefault>
           <Routes>
             <Route path="/" element={<App />} />
+            <Route path="/create-nft" element={<CreateNFT />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/token/:assetQuery" element={<TokenDetails />} />

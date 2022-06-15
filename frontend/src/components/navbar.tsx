@@ -63,7 +63,7 @@ function Navbar() {
                 {
                     userState.isConnected &&
                     <li className="nav-item font-kanit text-sm text-gray-700 hover:text-violet-500 tracking-wider uppercase">
-                        <Link to={`/explore`}>
+                        <Link to={`/create-nft`}>
                             Create
                         </Link>
                     </li>
