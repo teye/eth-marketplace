@@ -1,13 +1,15 @@
 import { Link } from "react-router-dom";
 import { ethers } from "ethers";
-import { USER_RESET, UPDATE_IS_CONNECTED, UPDATE_WALLET } from "../store/userSlice";
+import { USER_RESET, UPDATE_IS_CONNECTED, UPDATE_WALLET, UPDATE_BALANCE } from "../store/userSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { User } from "../icons/user";
 import { Menu, Transition } from '@headlessui/react'
 import { Fragment } from "react";
+import { formatAddressDisplay, truncate } from "../utils";
+import { Ethereum } from "../icons/eth";
 
 
-let provider;
+let provider: any;
 
 function Navbar() {
     const userState = useAppSelector((state) => state.user);
@@ -24,13 +26,19 @@ function Navbar() {
         // MetaMask requires requesting permission to connect users accounts
         // await provider.send("eth_requestAccounts", []);
         provider.send("eth_requestAccounts", [])
-          .then((accounts) => {
+          .then((accounts: any) => {
             if (accounts.length > 0) {
               dispatch(UPDATE_WALLET(accounts[0]));
               dispatch(UPDATE_IS_CONNECTED(true));
+
+              provider.getBalance(accounts[0])
+                .then((result: any) => {
+                    const bal = ethers.utils.formatEther(result);
+                    dispatch(UPDATE_BALANCE(bal));
+                });
             }
           })
-          .catch((e) => console.error(e));
+          .catch((e: any) => console.error(e));
     }
 
     const onDisconnect = () => {
@@ -47,31 +55,33 @@ function Navbar() {
                         </div>
                     </Link>
                 </li>
-                <li className="nav-item font-kanit text-sm text-gray-700 hover:text-black tracking-wider uppercase">
+                <li className="nav-item font-kanit text-sm text-gray-700 hover:text-violet-500 tracking-wider uppercase">
                     <Link to={`/explore`}>
                         Explore
                     </Link>
                 </li>
+                {
+                    userState.isConnected &&
+                    <li className="nav-item font-kanit text-sm text-gray-700 hover:text-violet-500 tracking-wider uppercase">
+                        <Link to={`/explore`}>
+                            Create
+                        </Link>
+                    </li>
+                }
                 <li className="font-kanit text-sm ml-auto mr-[2rem]">
                     {
                         !userState.isConnected 
-                        ?
+                        &&
                         <button 
-                            className="bg-black text-white py-2 px-4 rounded mr-4"
+                            className="bg-violet-600 text-white py-2 px-4 rounded mr-4"
                             onClick={() => onConnectWallet()}>
                             Connect MetaMask
-                        </button>
-                        :
-                        <button 
-                            className="bg-black text-white py-2 px-4 rounded mr-4"
-                            onClick={() => onDisconnect()}>
-                            Disconnect Wallet
                         </button>
                     }
                 </li>
                 {
                     userState.wallet &&
-                    <li className="nav-item font-kanit text-sm lowercase">
+                    <li className="nav-item text-sm lowercase">
                         <Menu as="div" className="relative inline-block text-left">
                             <div>
                             <Menu.Button className="inline-flex w-full justify-center rounded-full border-2 border-black shadow-sm text-sm font-medium p-1 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
@@ -91,29 +101,31 @@ function Navbar() {
                                 leaveTo="transform opacity-0 scale-95"
                             >
                             <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                <div className="px-1 py-1">
+                                    <div className="px-2 pt-2 text-sm normal-case font-semibold">Connected</div>
+                                    <div className="px-2 py-2 flex content-center items-center">
+                                        <div className="rounded-full bg-blue-500 h-8 w-8 mr-2 flex justify-center items-center">
+                                            <Ethereum 
+                                                width="12"
+                                                classNames="text-white"
+                                            />
+                                        </div>
+                                        <div>{formatAddressDisplay(userState.wallet)}</div>
+                                    </div>
+                                </div>
                                 <div className="px-1 py-1 ">
-                                <Menu.Item>
-                                    {({ active }) => (
-                                    <button
-                                        className={`${
-                                        active ? 'bg-violet-500 text-white' : 'text-gray-900'
-                                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                                    >
-                                        Edit
-                                    </button>
-                                    )}
-                                </Menu.Item>
-                                <Menu.Item>
-                                    {({ active }) => (
-                                    <button
-                                        className={`${
-                                        active ? 'bg-violet-500 text-white' : 'text-gray-900'
-                                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                                    >
-                                        Duplicate
-                                    </button>
-                                    )}
-                                </Menu.Item>
+                                    <div className="px-2 py-2 flex content-center items-center">
+                                        <div className="rounded-full bg-blue-50 h-8 w-8 mr-2 flex justify-center items-center">
+                                            <Ethereum 
+                                                width="12"
+                                                classNames="text-blue-300"
+                                            />
+                                        </div>
+                                        <div>
+                                            <div className="text-[0.9em] text-gray-500 normal-case">Ethereum</div>
+                                            <div className="text-black normal-case font-semibold">{truncate(userState.balance, 2)} ETH</div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="px-1 py-1">
                                 <Menu.Item>
@@ -122,32 +134,9 @@ function Navbar() {
                                         className={`${
                                         active ? 'bg-violet-500 text-white' : 'text-gray-900'
                                         } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                        onClick={() => onDisconnect()}
                                     >
-                                        Archive
-                                    </button>
-                                    )}
-                                </Menu.Item>
-                                <Menu.Item>
-                                    {({ active }) => (
-                                    <button
-                                        className={`${
-                                        active ? 'bg-violet-500 text-white' : 'text-gray-900'
-                                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                                    >
-                                        Move
-                                    </button>
-                                    )}
-                                </Menu.Item>
-                                </div>
-                                <div className="px-1 py-1">
-                                <Menu.Item>
-                                    {({ active }) => (
-                                    <button
-                                        className={`${
-                                        active ? 'bg-violet-500 text-white' : 'text-gray-900'
-                                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                                    >
-                                        Delete
+                                        Disconnect Wallet
                                     </button>
                                     )}
                                 </Menu.Item>
