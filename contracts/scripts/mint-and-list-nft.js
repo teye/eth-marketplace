@@ -18,7 +18,7 @@ async function main() {
     // const nftFactory = await hre.ethers.getContractFactory("DummyNFT");
 
     const marketplaceContract = await hre.ethers.getContractAt("Marketplace", marketplaceAddress);
-    const nftContract = await hre.ethers.getContractAt("DummyNFT", nftAddress);
+    const nftContract = await hre.ethers.getContractAt("BasicNFT", nftAddress);
 
     for (let i = 0; i < numNFTtoMint; i++) {
       console.log(`Minting NFT for ${owner.address}`);
