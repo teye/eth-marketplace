@@ -1,0 +1,17 @@
+// schema design
+
+// minted collection
+{
+    "wallet_address",
+    "token_address",
+    "token_id",
+    "minted_date"
+}
+
+// listings collection
+{
+    "token_address",
+    "token_id",
+    "price",
+    "listing_date",
+}
