@@ -10,6 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(require('./routes/minted'));
+app.use(require('./routes/listings'));
 
 // global error handling
 app.use((err, req, res, next) => {

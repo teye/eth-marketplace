@@ -12,6 +12,7 @@
 {
     "token_address",
     "token_id",
+    "seller",
     "price",
     "listing_date",
 }
