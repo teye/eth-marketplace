@@ -24,9 +24,9 @@ mintedRoutes.route('/minted').get(async function (req, res) {
         .sort({ minted_date: -1 })
         .toArray(function (err, result) {
             if (err) {
-                res.status(400).send('Error fetching minted nfts!');
+                res.status(400).json({ success: false, msg: `error fetching minted nfts` });
             } else {
-                res.json(result);
+                res.status(200).json({ success: true, result: result });
             }
         });
 });
@@ -48,9 +48,9 @@ mintedRoutes.route('/minted/:wallet_address').get(async function (req, res) {
         .sort({ minted_date: -1 })
         .toArray(function (err, result) {
             if (err) {
-                res.status(400).send(`Error fetching minted nfts - ${req.params.wallet_address}!`);
+                res.status(400).json({ success: false, msg: `error fetching minted nfts - ${req.params.wallet_address}` });
             } else {
-                res.json(result);
+                res.status(200).json({ success: true, result: result });
             }
         });
 });
@@ -78,15 +78,15 @@ mintedRoutes.route('/minted').post(function (req, res) {
             .insertOne(minted, function (err, result) {
                 if (err) {
                     console.error(err);
-                    res.status(400).send('Error creating new minted entry!');
+                    throw new Error('error creating new minted entry');
                 } else {
                     console.log(`Added a new entry - id: ${result.insertedId}`);
-                    res.status(201).json(result);
+                    res.status(201).json({ success: true, result: result });
                 }
             });
 
     } catch (error) {
-        res.status(400).json({ msg: error.message });
+        res.status(400).json({ success: false, msg: error.message });
     } 
 });
 

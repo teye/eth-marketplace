@@ -21,9 +21,9 @@ listingsRoutes.route('/listings').get(function (req, res) {
         .sort({ listing_date: -1 })
         .toArray(function (err, result) {
             if (err) {
-                res.status(400).send('Error fetching listed nfts!');
+                res.status(400).json({ success: false, msg: `error fetching listed nfts` });
             } else {
-                res.json(result);
+                res.status(200).json({ success: true, result: result });
             }
         });
 });
@@ -54,13 +54,13 @@ listingsRoutes.route('/listings/:seller').get(function (req, res) {
             .sort({ listing_date: -1 })
             .toArray(function (err, result) {
                 if (err) {
-                    res.status(400).send('Error fetching seller listed nfts!');
+                    throw new Error('error fetching seller listed nfts');
                 } else {
-                    res.json(result);
+                    res.status(200).json({ success: true, result: result });
                 }
             });
     } catch (error) {
-        res.status(400).json({ msg: error.message });
+        res.status(400).json({ success: false, msg: error.message });
     }
 })
 
@@ -91,15 +91,15 @@ listingsRoutes.route('/listings/:token_address/:token_id').get(function (req, re
             .findOne(filter, function (err, result) {
                 if (err) {
                     console.error(err);
-                    res.status(400).send(`Error finding listing! ${req.params.token_address} - ${req.params.token_id}`);
+                    throw new Error(`error fetching listing - ${token_address}-${token_id}`);
                 } else {
                     console.log(`Found entry - ${req.params.token_address} - ${req.params.token_id}`);
-                    res.status(201).json(result);
+                    res.status(200).json({ success: true, result: result });
                 }
             });
 
     } catch (error) {
-        res.status(400).json({ msg: error.message });
+        res.status(400).json({ success: false, msg: error.message });
     }
 });
 
@@ -142,16 +142,16 @@ listingsRoutes.route('/listings/:token_address/:token_id').put(function (req, re
                 function (err, result) {
                     if (err) {
                         console.error(err);
-                        res.status(400).send(`Error updating listing! ${token_address} - ${token_id}`);
+                        throw new Error(`error updating listing - ${token_address}-${token_id}`);
                     } else {
                         console.log(`Updated listing - ${token_address} - ${token_id}`);
-                        res.status(201).json(result);
+                        res.status(200).json({ success: true, result: result });
                     }
                 }
             );
 
     } catch (error) {
-        res.status(400).json({ msg: error.message });
+        res.status(400).json({ success: false, msg: error.message });
     }
 });
 
@@ -188,15 +188,15 @@ listingsRoutes.route('/listings').post(function (req, res) {
             .insertOne(listing, function (err, result) {
                 if (err) {
                     console.error(err);
-                    res.status(400).send('Error creating new listing!');
+                    throw new Error('error creating new listing');
                 } else {
                     console.log(`Added a new entry - id: ${result.insertedId}`);
-                    res.status(201).json(result);
+                    res.status(201).json({ success: true, result: result });
                 }
             });
 
     } catch (error) {
-        res.status(400).json({ msg: error.message });
+        res.status(400).json({ success: false, msg: error.message });
     }
 });
 
@@ -229,15 +229,15 @@ listingsRoutes.route('/listings/:token_address/:token_id').delete(function (req,
             .findOneAndDelete(filter, function (err, result) {
                 if (err) {
                     console.error(err);
-                    res.status(400).send(`Error deleting listing! ${req.params.token_address} - ${req.params.token_id}`);
+                    throw new Error(`error deleting listing ${token_address}-${token_id}`);
                 } else {
                     console.log(`Deleted entry - ${req.params.token_address} - ${req.params.token_id}`);
-                    res.status(201).json(result);
+                    res.status(200).json({ success: true, result: result });
                 }
             });
 
     } catch (error) {
-        res.status(400).json({ msg: error.message });
+        res.status(400).json({ success: false, msg: error.message });
     }
 });
 
