@@ -49,10 +49,13 @@
 
 .nav-item {
   list-style: none;
-  /* margin-left: ; */
   margin-right: 2rem;
 }
 
-/* .nav-item:first-child {
-  margin-right: auto;
-} */
+.price-input::after {
+  content: "ETH" attr(data-salePrice);
+  position: absolute;
+  top: 4px;
+  left: 96px;
+  display: block;
+}

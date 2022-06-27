@@ -26,8 +26,10 @@ const fetchNFTs = async (
     // console.log(deployedMP);
     const listing1 = await deployedMP.getListing("0x5FbDB2315678afecb367f032d93F642f64180aa3", "1");
     const listing2 = await deployedMP.getListing("0x5FbDB2315678afecb367f032d93F642f64180aa3", "2");
+    const listing3 = await deployedMP.getListing("0x68B1D87F95878fE05B998F19b66F4baba5De1aed", "1");
     sales.push(listing1);
     sales.push(listing2);
+    // sales.push(listing3);
     
     console.log("listing1: ", listing1);
     console.log("listing2: ", listing2);
