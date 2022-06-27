@@ -51,7 +51,7 @@ function CreateNFT() {
     /**
      * sell nft on the marketplace; require user to approve marketplace to sell
      */
-    const onSell = async (tokenId: string) => {
+    const onSell = async (tokenId: string, salePriceWei: string) => {
         // approve marketplace first
         const approvalTx = await nftContract.approve(marketplaceAddress, tokenId);
         await approvalTx.wait();
@@ -62,7 +62,7 @@ function CreateNFT() {
         const sellTx = await marketplace.sell(
             nftContract.address,
             tokenId,
-            ethers.utils.parseEther("0.2").toString()
+            salePriceWei
         )
         await sellTx.wait();
         console.log("sell nft: ", sellTx.hash);
@@ -99,14 +99,16 @@ function CreateNFT() {
                 wallet_address: `${userState.wallet}`,
             });
 
-            await onSell(tokenId);
+            const salePriceWei = ethers.utils.parseEther(`${data.salePrice}`).toString();
+
+            await onSell(tokenId, salePriceWei);
 
             // record sell listing to db
             await backend.addListing({
                 token_address: `${nftContract.address.toLowerCase()}`,
                 token_id: `${tokenId}`,
                 seller: `${userState.wallet}`,
-                price: `2000000000000000`,
+                price: salePriceWei,
             })
         } catch (e) {
             console.error(e);
@@ -129,8 +131,9 @@ function CreateNFT() {
                             type="text"
                             className="block w-96 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" 
                             placeholder={`e.g. "Rare meteorite stone"`}
-                            {...register("name")} 
+                            {...register("name", { required: true })} 
                         />
+                        {errors.name && <p className="text-sm text-red-500 font-bold">Name is required.</p>}
                     </div>
                     <div className="mb-2">
                         <label 
@@ -142,8 +145,9 @@ function CreateNFT() {
                             type="text"
                             className="block w-96 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" 
                             placeholder={`e.g. "RMS"`}
-                            {...register("symbol")} 
+                            {...register("symbol", { required: true })}
                         />
+                        {errors.symbol && <p className="text-sm text-red-500 font-bold">Symbol is required.</p>}
                     </div>
                     <div>
                         <label 
@@ -156,10 +160,16 @@ function CreateNFT() {
                                 type="text"
                                 className="block w-96 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black pr-10" 
                                 defaultValue={1}
-                                {...register("salePrice")} 
+                                {...register("salePrice", { 
+                                    required: true, 
+                                        validate: {
+                                            positiveNumber: (value) => parseFloat(value) > 0
+                                        } 
+                                    })} 
                             />
                             <div className="-ml-8 font-semibold">ETH</div>
                         </div>
+                        {errors.salePrice && errors.salePrice.type === "positiveNumber" && <p className="text-sm text-red-500 font-bold">Price should be a whole number or decimals, e.g. 1, 1.234</p>}
                     </div>
                 </div>
                 <button 
