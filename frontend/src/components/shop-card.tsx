@@ -15,7 +15,7 @@ function ShopCard(props: ListingDetails) {
             <div className="flex justify-between">
                 {/* token info */}
                 <div className="text-[1rem] font-bold">
-                    {props.tokenName ?? 'Token Name'} #{props.tokenId ?? '-1'}
+                    {props.tokenName ?? 'Token Name'} #{props.tokenId ?? '0'}
                 </div>
                 {/* price */}
                 <div>

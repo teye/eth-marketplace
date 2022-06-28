@@ -54,10 +54,47 @@ export class BackendApi {
         }
     }
 
+    /**
+     * get all the nft listings currently sold on the marketplace
+     * @returns 
+     * [
+     *  {
+     *    token_address,
+     *    token_id
+     *    price
+     *    seller
+     *  }
+     * ]
+     */
     async getListings() {
         console.log("get listings");
         try {
             const response = await axios.get(`${this.endpoint}/listings`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    /**
+     * get a particular nft listing details
+     * @param tokenAddress nft contract address
+     * @param tokenId nft token id
+     * @returns 
+     * {
+     *   token_address
+     *   token_id
+     *   price
+     *   seller
+     * }
+     */
+    async getListingByToken(tokenAddress: string, tokenId: string) {
+        console.log("get listings by token address-token id");
+        console.log(tokenAddress);
+        console.log(tokenId);
+        try {
+            const response = await axios.get(`${this.endpoint}/listings/${tokenAddress}/${tokenId}`);
             return response.data;
         } catch (error) {
             console.error(error);

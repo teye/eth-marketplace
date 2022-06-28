@@ -7,6 +7,9 @@ import { useAppSelector } from "../store/hooks";
 import toast from "react-hot-toast";
 import BuyModal from "../modals/buy-modal";
 import { PROGRESS } from "../constants";
+import { BackendApi } from "../mixin/backend";
+import { ListingDetails } from "../types/types";
+import { BASIC_NFT_ABI } from "../abi/basicnftABI";
 
 
 const fetchNFTDetatils = async (
@@ -14,10 +17,13 @@ const fetchNFTDetatils = async (
     marketplaceAddress: string,
     assetQuery: string
 ) => {
-    let tokenAddress = '';
-    let tokenId = '';
-    let seller = '';
-    let price = '';
+    let result: ListingDetails = {
+        tokenAddress: '',
+        tokenId: '',
+        tokenName: '',
+        price: '0',
+        seller: '',
+    };
 
     const assetQueryArray = assetQuery?.split(":") ?? [];
 
@@ -25,28 +31,25 @@ const fetchNFTDetatils = async (
         const _tokenAddress: string = assetQueryArray[0];
         const _tokenId: string = assetQueryArray[1];
 
-        const provider = ethers.getDefaultProvider("http://localhost:8545");
-        const deployedMP = new ethers.Contract(marketplaceAddress, MARKETPLACE_ABI, provider);
+        const backend = new BackendApi();
 
-        try {
-            let listing = await deployedMP.getListing(_tokenAddress, _tokenId);
-            if (listing && listing.tokenAddress !== "0x0000000000000000000000000000000000000000") {
-                tokenAddress = listing.tokenAddress;
-                tokenId = `${listing.tokenId}`;
-                price = `${listing.price}`;
-                seller = listing.seller;
-            }
-        } catch (e) {
-            console.error(e);
+        const listing = await backend.getListingByToken(_tokenAddress, _tokenId);
+
+        if (!listing) {
+            return result;
         }
+
+        const provider = ethers.getDefaultProvider("http://localhost:8545");
+        const nft = new ethers.Contract(_tokenAddress, BASIC_NFT_ABI, provider);
+        result.tokenName = await nft.name();
+
+        result.tokenAddress = _tokenAddress;
+        result.tokenId = _tokenId;
+        result.price = listing.result.price;
+        result.seller = listing.result.seller;
     }
 
-    return {
-        tokenAddress,
-        tokenId,
-        seller,
-        price
-    }
+    return result;
 }
 
 let provider: any;
@@ -140,7 +143,7 @@ function TokenDetails() {
                     <div className="rounded-xl bg-slate-800 h-[400px] w-[400px]"></div>
                     {/* nft details */}
                     <div className="p-4">
-                        <h1 className="font-semibold text-xl">Token Name #{data.tokenId}</h1>
+                        <h1 className="font-semibold text-xl">{data.tokenName} #{data.tokenId}</h1>
                         <div className="text-gray-500 text-[0.9em]">
                             Owned by <span className="text-blue-500">{data.seller.toLowerCase()}</span>
                         </div>
