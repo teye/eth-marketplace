@@ -2,8 +2,11 @@ import { ethers } from "ethers";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useSWR from 'swr';
+import { BASIC_NFT_ABI } from "../abi/basicnftABI";
 import { MARKETPLACE_ABI } from "../abi/marketplaceABI";
 import { ZERO_ADDRESS } from "../constants";
+import { BackendApi } from "../mixin/backend";
+import { ListingDetails } from "../types/types";
 import ShopCard from "./shop-card";
 
 
@@ -13,26 +16,32 @@ const fetchNFTs = async (
     key: string, 
     marketplaceAddress: string
 ) => {
-    let sales = [];
-
-    console.log(marketplaceAddress);
-    provider = ethers.getDefaultProvider("http://localhost:8545");
-    // provider = new ethers.providers.Web3Provider(window.ethereum);
-    console.log(provider);
-
-    // @TODO refactor to read token address and token id from database
-    const deployedMP = new ethers.Contract(marketplaceAddress, MARKETPLACE_ABI, provider);
-
-    // console.log(deployedMP);
-    const listing1 = await deployedMP.getListing("0x5FbDB2315678afecb367f032d93F642f64180aa3", "1");
-    const listing2 = await deployedMP.getListing("0x5FbDB2315678afecb367f032d93F642f64180aa3", "2");
-    const listing3 = await deployedMP.getListing("0x68B1D87F95878fE05B998F19b66F4baba5De1aed", "1");
-    sales.push(listing1);
-    sales.push(listing2);
-    // sales.push(listing3);
+    const backend = new BackendApi();
+    let sales: ListingDetails[] = [];
     
-    console.log("listing1: ", listing1);
-    console.log("listing2: ", listing2);
+    provider = ethers.getDefaultProvider("http://localhost:8545");
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+
+    const listings = await backend.getListings();
+
+    if (!listings) {
+        return sales;
+    }
+
+    for (const item of listings.result) {
+        const nft = new ethers.Contract(item.token_address, BASIC_NFT_ABI, provider);
+        const tokenName = await nft.name();
+
+        sales.push({
+            tokenAddress: item.token_address,
+            tokenName: tokenName,
+            tokenId: item.token_id,
+            seller: item.seller,
+            price: item.price,
+        });
+    }
+
+    console.log(listings);
 
     return sales;
 };
@@ -62,8 +71,7 @@ function Explore() {
                                         key={index}
                                         to={`/token/${item.tokenAddress}:${item.tokenId}`}>
                                         <ShopCard 
-                                            tokenId={`${item.tokenId}`}
-                                            price={item.price}
+                                            {...item}
                                         />
                                     </Link>
                                 )

@@ -1,20 +1,11 @@
-import { BigNumber } from "ethers";
 import { ethers } from "ethers";
+import { ListingDetails } from "../types/types";
 
-type Props = {
-    tokenId: string;
-    price: BigNumber;
-}
 
 /**
  * used to display items for sale
  */
-function ShopCard(props: Props) {
-    const {
-        tokenId,
-        price
-    } = props;
-
+function ShopCard(props: ListingDetails) {
     return (
         <div className="rounded-xl border border-gray-300 max-w-fit md:min-w-fit p-3 shadow-md text-sm">
             <div className="mb-4">
@@ -23,13 +14,13 @@ function ShopCard(props: Props) {
             </div>
             <div className="flex justify-between">
                 {/* token info */}
-                <div>
-                    Token Name #{tokenId}
+                <div className="text-[1rem] font-bold">
+                    {props.tokenName ?? 'Token Name'} #{props.tokenId ?? '-1'}
                 </div>
                 {/* price */}
                 <div>
                     Price
-                    <p>{ethers.utils.formatEther(`${price}`)} ETH</p>
+                    <p>{ethers.utils.formatEther(`${props.price ?? '0'}`)} ETH</p>
                 </div>
             </div>
         </div>

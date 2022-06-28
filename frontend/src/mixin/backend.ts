@@ -47,7 +47,18 @@ export class BackendApi {
         console.log("add listings to backend");
         try {
             const response = await axios.post(`${this.endpoint}/listings`, listingJSON);
-            return response;
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    async getListings() {
+        console.log("get listings");
+        try {
+            const response = await axios.get(`${this.endpoint}/listings`);
+            return response.data;
         } catch (error) {
             console.error(error);
             return null;
