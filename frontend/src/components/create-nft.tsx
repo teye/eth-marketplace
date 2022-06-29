@@ -96,7 +96,8 @@ function CreateNFT() {
             await backend.addMintedNFT({
                 token_address: `${nftContract.address.toLowerCase()}`,
                 token_id: `${tokenId}`,
-                wallet_address: `${userState.wallet}`,
+                minter: `${userState.wallet}`,
+                owner: `${userState.wallet}`,
             });
 
             const salePriceWei = ethers.utils.parseEther(`${data.salePrice}`).toString();

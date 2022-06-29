@@ -6,7 +6,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import LayoutDefault from './components/layout';
 import Explore from './components/explore';
-import Profile from './components/profile';
+import Profile from './components/profile/profile';
 import TokenDetails from './components/token-details';
 import Error from './components/error';
 import { Provider } from 'react-redux';

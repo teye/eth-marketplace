@@ -3,7 +3,8 @@ const axios = require('axios').default;
 type NFTJSON = {
     token_address: string;
     token_id: string;
-    wallet_address: string;
+    minter: string;
+    owner: string;
 }
 
 type ListingJSON = {
@@ -30,7 +31,39 @@ export class BackendApi {
     async addMintedNFT(nftJSON: NFTJSON) {
         console.log("add minted nft to backend");
         try {
-            const response = await axios.post(`${this.endpoint}/minted`, nftJSON);
+            const response = await axios.post(`${this.endpoint}/tokens`, nftJSON);
+            return response;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    /**
+     * fetch list of nfts minted by wallet
+     * @param minter wallet address
+     * @returns 
+     */
+    async getMintedNFTs(minter: string) {
+        console.log("get minted nft");
+        try {
+            const response = await axios.post(`${this.endpoint}/tokens/minted/${minter}`);
+            return response;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    /**
+     * fetch list of nfts owned by wallet
+     * @param owner 
+     * @returns 
+     */
+    async getOwnedNFTs(owner: string) {
+        console.log("get owned nft");
+        try {
+            const response = await axios.post(`${this.endpoint}/tokens/owned/${owner}`);
             return response;
         } catch (error) {
             console.error(error);
@@ -91,10 +124,23 @@ export class BackendApi {
      */
     async getListingByToken(tokenAddress: string, tokenId: string) {
         console.log("get listings by token address-token id");
-        console.log(tokenAddress);
-        console.log(tokenId);
         try {
             const response = await axios.get(`${this.endpoint}/listings/${tokenAddress}/${tokenId}`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    /**
+     * gets all the listings sold by a particular seller
+     * @param seller wallet address
+     */
+    async getListingsBySeller(seller: string) {
+        console.log("get listings by a particular seller");
+        try {
+            const response = await axios.get(`${this.endpoint}/listings/${seller}`);
             return response.data;
         } catch (error) {
             console.error(error);
