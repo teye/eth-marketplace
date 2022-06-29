@@ -6,7 +6,8 @@
     "owner",
     "token_address",
     "token_id",
-    "minted_date"
+    "minted_date",
+    "modified_date"
 }
 
 // listings collection
@@ -16,4 +17,5 @@
     "seller",
     "price",
     "listing_date",
+    "modified_date"
 }
