@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { Link } from "react-router-dom";
 import useSWR from "swr";
 import { BASIC_NFT_ABI } from "../../abi/basicnftABI";
+import { MARKETPLACE_ABI } from "../../abi/marketplaceABI";
 import { DEFAULT_ETH_PROVIDER } from "../../constants";
 import { BackendApi } from "../../mixin/backend";
 import { useAppSelector } from "../../store/hooks";
@@ -31,10 +32,15 @@ const fetchUserOwned = async (
         const nft = new ethers.Contract(item.token_address, BASIC_NFT_ABI, provider);
         const tokenName = await nft.name();
 
+        const listing = await backend.getListingByToken(item.token_address, item.token_id);
+        const isListed = listing.result ? true : false;
+
         nfts.push({
             tokenAddress: item.token_address,
             tokenName: tokenName,
             tokenId: item.token_id,
+            owner: item.owner,
+            isListed,
         });
     }
 
@@ -73,7 +79,10 @@ const fetchUserOwned = async (
                                 return (
                                     <Link 
                                         key={index}
-                                        to={`/token/${item.tokenAddress}:${item.tokenId}`}>
+                                        to={
+                                            item.isListed ? 
+                                            `/sale/${item.tokenAddress}:${item.tokenId}` : 
+                                            `/token/${item.tokenAddress}:${item.tokenId}`}>
                                         <NFTCard 
                                             {...item}
                                         />

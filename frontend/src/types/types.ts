@@ -10,4 +10,6 @@ export type NFTDetails = {
     tokenAddress: string;
     tokenName: string;
     tokenId: string;
+    owner: string;
+    isListed: boolean;
 }

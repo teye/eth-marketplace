@@ -6,13 +6,13 @@ import { MARKETPLACE_ABI } from "../abi/marketplaceABI";
 import { useAppSelector } from "../store/hooks";
 import toast from "react-hot-toast";
 import BuyModal from "../modals/buy-modal";
-import { PROGRESS } from "../constants";
+import { DEFAULT_ETH_PROVIDER, PROGRESS } from "../constants";
 import { BackendApi } from "../mixin/backend";
 import { ListingDetails } from "../types/types";
 import { BASIC_NFT_ABI } from "../abi/basicnftABI";
 
 
-const fetchNFTDetatils = async (
+const fetchSalesDetails = async (
     key: string,
     marketplaceAddress: string,
     assetQuery: string
@@ -39,7 +39,7 @@ const fetchNFTDetatils = async (
             return result;
         }
 
-        const provider = ethers.getDefaultProvider("http://localhost:8545");
+        const provider = ethers.getDefaultProvider(DEFAULT_ETH_PROVIDER);
         const nft = new ethers.Contract(_tokenAddress, BASIC_NFT_ABI, provider);
         result.tokenName = await nft.name();
 
@@ -58,7 +58,7 @@ function SaleDetails() {
     let marketplaceAddress = process.env.REACT_APP_MARKETPLACE_CONTRACT ?? "a";
     let navigate = useNavigate();
     const { assetQuery } = useParams();
-    const { data, error } = useSWR([`swr_fetch_nft_details`, marketplaceAddress, assetQuery], fetchNFTDetatils);
+    const { data, error } = useSWR([`swr_fetch_sales_details`, marketplaceAddress, assetQuery], fetchSalesDetails);
     
     const userState = useAppSelector((state) => state.user);
     const [openModal, setOpenModal] = useState(false);
@@ -81,6 +81,45 @@ function SaleDetails() {
     };
 
     /**
+     * cancel the listing
+     * @param tokenAddress 
+     * @param tokenId 
+     */
+    const onCancel = async (
+        tokenAddress: string,
+        tokenId: string,
+    ) => {
+        if (!userState.isConnected) {
+            console.error("Please connect wallet to continue.");
+            toast.error("Please connect wallet to continue.");
+            return;
+        }
+
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+
+        // check user balance
+
+        const signer = provider.getSigner();
+
+        // setOpenModal(true);
+
+        const deployed = new ethers.Contract(marketplaceAddress, MARKETPLACE_ABI, signer);
+
+        try {
+            const tx = await deployed.cancelListing(
+                tokenAddress, 
+                tokenId
+            );
+            console.log("tx: ", tx.hash);
+            // setProgress(PROGRESS.CONFIRM);
+            // setTxHash(tx.hash);
+        } catch (e) {
+            console.error(e);
+            // onCloseModal();
+        }
+    }
+
+    /**
      * buy an NFT
      * @param tokenAddress 
      * @param tokenId 
@@ -98,7 +137,7 @@ function SaleDetails() {
             return;
         }
 
-        provider = ethers.getDefaultProvider("http://localhost:8545");
+        provider = new ethers.providers.Web3Provider(window.ethereum);
 
         // check user balance
         const userBal = await provider.getBalance(userState.wallet);
@@ -151,11 +190,38 @@ function SaleDetails() {
                             <h3 className="font-semibold text-zinc-400 text-[0.9em]">Current price</h3>
                             <div className="font-bold text-3xl text-neutral-800">{ethers.utils.formatEther(data.price)} ETH</div>
                         </div>
-                        <button 
-                            className="bg-black font-bold text-sm text-white py-2 px-6 rounded mr-4"
-                            onClick={() => onBuy(data.tokenAddress, data.tokenId, data.price)}>
-                            Buy now
-                        </button>
+                        {
+                            (
+                                data.seller &&
+                                data.price
+                            ) 
+                            ?
+                            userState.wallet === data.seller
+                            ?
+                            <div>
+                                {/* seller can update or cancel listing */}
+                                <button 
+                                    className="bg-black font-bold text-sm text-white py-2 px-6 rounded mr-4"
+                                >
+                                    Update listing
+                                </button>
+                                <button 
+                                    className="bg-red-500 font-bold text-sm text-white py-2 px-6 rounded mr-4"
+                                    onClick={() => onCancel(data.tokenAddress, data.tokenId)}
+                                >
+                                    Cancel listing
+                                </button>
+                            </div>
+                            :
+                            <button 
+                                className="bg-black font-bold text-sm text-white py-2 px-6 rounded mr-4"
+                                onClick={() => onBuy(data.tokenAddress, data.tokenId, data.price)}>
+                                Buy now
+                            </button>
+                            :
+                            <></>
+                        }
+
                     </div>
                 </div>
             }

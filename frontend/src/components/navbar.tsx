@@ -89,13 +89,21 @@ function Navbar() {
             // call db to update listing details
         }
 
-        const cancelListener = () => {
+        const cancelListener = async (from: string, tokenAddress: string, tokenId: number) => {
             // call db to remove listing
+            console.log(`nft cancel event: ${from}, ${tokenAddress}, ${tokenId}`);
+
+            const _tokenAddress = tokenAddress.toLowerCase();
+            const _tokenId = tokenId.toString().toLowerCase();
+            const _from = from.toLowerCase();
+
+            await backend.deleteListing(_tokenAddress, _tokenId);
         }
 
         provider.once("block", () => {
             marketplace.on("NFTBought", buyListener);
             marketplace.on("NFTListed", sellListener);
+            marketplace.on("NFTDeListed", cancelListener);
         });
 
         // marketplace.on("NFTBought", buyListener);
@@ -106,6 +114,7 @@ function Navbar() {
         return () => {
             marketplace.removeListener("NFTBought", buyListener);
             marketplace.removeListener("NFTListed", sellListener);
+            marketplace.removeListener("NFTDeListed", cancelListener);
         }
 
     }, []);

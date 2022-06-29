@@ -72,6 +72,43 @@ export class BackendApi {
     }
 
     /**
+     * update token owner
+     * @param tokenAddress 
+     * @param tokenId 
+     * @param owner 
+     * @returns 
+     */
+     async updateToken(tokenAddress: string, tokenId: string, owner: string) {
+        console.log("update token owner");
+        try {
+            const response = await axios.put(`${this.endpoint}/tokens/${tokenAddress}/${tokenId}`, {
+                owner: owner
+            });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    /**
+     * get token info
+     * @param tokenAddress 
+     * @param tokenId 
+     * @returns 
+     */
+    async getTokenInfo(tokenAddress: string, tokenId: string) {
+        console.log("get token info", tokenAddress, tokenId);
+        try {
+            const response = await axios.get(`${this.endpoint}/tokens/${tokenAddress}/${tokenId}`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    /**
      * add listing to db
      * @param listingJSON 
      * @returns 
@@ -158,26 +195,6 @@ export class BackendApi {
         console.log("delete listing");
         try {
             const response = await axios.delete(`${this.endpoint}/listings/${tokenAddress}/${tokenId}`);
-            return response.data;
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
-    }
-
-    /**
-     * update token owner
-     * @param tokenAddress 
-     * @param tokenId 
-     * @param owner 
-     * @returns 
-     */
-    async updateToken(tokenAddress: string, tokenId: string, owner: string) {
-        console.log("update token owner");
-        try {
-            const response = await axios.put(`${this.endpoint}/tokens/${tokenAddress}/${tokenId}`, {
-                owner: owner
-            });
             return response.data;
         } catch (error) {
             console.error(error);

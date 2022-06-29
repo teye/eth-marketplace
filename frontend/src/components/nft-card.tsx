@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { NFTDetails } from "../types/types";
 
 
