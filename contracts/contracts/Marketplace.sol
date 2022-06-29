@@ -36,9 +36,9 @@ contract Marketplace is ReentrancyGuard, Ownable {
     }
 
     // events
-    event NFTListed(address indexed _from, address indexed _tokenAddress, uint256 tokenId);
+    event NFTListed(address indexed _from, address indexed _tokenAddress, uint256 tokenId, uint256 price);
     event NFTBought(address indexed _from, address indexed _tokenAddress, uint256 tokenId);
-    event ListingUpdated(address indexed _from, address indexed _tokenAddress, uint256 tokenId);
+    event ListingUpdated(address indexed _from, address indexed _tokenAddress, uint256 tokenId, uint256 price);
     event NFTDeListed(address indexed _from, address indexed _tokenAddress, uint256 tokenId);
 
     // state variables
@@ -92,7 +92,7 @@ contract Marketplace is ReentrancyGuard, Ownable {
         }
         _numNFTListed.increment();
         salesListings[tokenAddress][tokenId] = Listing(tokenAddress, msg.sender, tokenId, price);
-        emit NFTListed(msg.sender, tokenAddress, tokenId);
+        emit NFTListed(msg.sender, tokenAddress, tokenId, price);
     }
 
     /**
@@ -139,7 +139,7 @@ contract Marketplace is ReentrancyGuard, Ownable {
         }
 
         salesListings[tokenAddress][tokenId].price = newPrice;
-        emit ListingUpdated(msg.sender, tokenAddress, tokenId);
+        emit ListingUpdated(msg.sender, tokenAddress, tokenId, newPrice);
     }
 
     /**

@@ -31,7 +31,7 @@ describe("Marketplace contract", function () {
             await nftDeployed.connect(addr1).approve(marketplaceDeployed.address, 1);
             // sell
             const sellTx = await marketplaceDeployed.connect(addr1).sell(nftDeployed.address, 1, "1000000000000000");
-            await expect(sellTx).to.emit(marketplaceDeployed, 'NFTListed').withArgs(addr1.address, nftDeployed.address, 1);
+            await expect(sellTx).to.emit(marketplaceDeployed, 'NFTListed').withArgs(addr1.address, nftDeployed.address, 1, 1000000000000000);
 
             expect(await marketplaceDeployed._numNFTListed()).to.equal("1");
         });
@@ -171,7 +171,7 @@ describe("Marketplace contract", function () {
 
         it("Should update listing", async function() {
             const tx = await marketplaceDeployed.connect(addr1).updateListing(nftDeployed.address, 1, "2000000000000000");
-            await expect(tx).to.emit(marketplaceDeployed, "ListingUpdated").withArgs(addr1.address, nftDeployed.address, 1);
+            await expect(tx).to.emit(marketplaceDeployed, "ListingUpdated").withArgs(addr1.address, nftDeployed.address, 1, 2000000000000000);
 
             const listing = await marketplaceDeployed.getListing(nftDeployed.address, 1);
             expect(listing.price).to.equal("2000000000000000");
