@@ -80,6 +80,43 @@ const dbo = require('../db/conn');
 });
 
 /**
+ * fetch the nft by token address and token id
+ */
+tokensRoutes.route('/tokens/:token_address/:token_id').get(function (req, res) {
+    const dbClient = dbo.getDB();
+
+    try {
+        if (!req.params ||
+            !req.params.token_address ||
+            !req.params.token_id) 
+        {
+            throw new Error('invalid params');
+        }
+
+        const { token_address, token_id } = req.params;
+
+        const filter = {
+            token_address: token_address,
+            token_id: token_id,
+        }
+
+        dbClient
+            .collection('tokens')
+            .findOne(filter, 
+            function (err, result) {
+                if (err) {
+                    res.status(400).json({ success: false, msg: `error fetching nft - ${token_address}-${token_id}` });
+                } else {
+                    res.status(200).json({ success: true, result: result });
+                }
+            });
+
+    } catch (error) {
+        res.status(400).json({ success: false, msg: error.message });
+    }
+})
+
+/**
  * update the token entry, e.g updating the owner when it changed hands
  */
 tokensRoutes.route('/tokens/:token_address/:token_id').put(function (req, res) {
