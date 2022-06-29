@@ -68,8 +68,21 @@ function Navbar() {
             await backend.updateToken(_tokenAddress, _tokenId, _from);
         }
 
-        const sellListener = () => {
+        const sellListener = async (from: string, tokenAddress: string, tokenId: number, price: number) => {
+            console.log(`nft sell event: ${from}, ${tokenAddress}, ${tokenId}, ${price}`);
+
             // call db to add new sell listing
+            const _tokenAddress = tokenAddress.toLowerCase();
+            const _tokenId = tokenId.toString().toLowerCase();
+            const _from = from.toLowerCase();
+            const _price = price.toString();
+
+            await backend.addListing({
+                token_address: _tokenAddress,
+                token_id: _tokenId,
+                seller: _from,
+                price: _price,
+            });
         }
 
         const updateListener = () => {
@@ -82,10 +95,17 @@ function Navbar() {
 
         provider.once("block", () => {
             marketplace.on("NFTBought", buyListener);
+            marketplace.on("NFTListed", sellListener);
         });
+
+        // marketplace.on("NFTBought", buyListener);
+
+        // marketplace.on("NFTListed", sellListener);
+
 
         return () => {
             marketplace.removeListener("NFTBought", buyListener);
+            marketplace.removeListener("NFTListed", sellListener);
         }
 
     }, []);
