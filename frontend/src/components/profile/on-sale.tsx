@@ -68,7 +68,7 @@ function OnSale() {
                     <p>You have not listed any NFTs on the marketplace yet.</p>
                     :
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-20 gap-y-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-[8rem] gap-y-8 mb-8 lg:gap-x-[18rem]">
                         {
                             data.map((item, index) => {
                                 return (

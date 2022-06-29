@@ -4,14 +4,18 @@ import { USER_RESET, UPDATE_IS_CONNECTED, UPDATE_WALLET, UPDATE_BALANCE } from "
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { User } from "../icons/user";
 import { Menu, Transition } from '@headlessui/react'
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { formatAddressDisplay, truncate } from "../utils";
 import { Ethereum } from "../icons/eth";
+import { DEFAULT_ETH_PROVIDER } from "../constants";
+import { MARKETPLACE_ABI } from "../abi/marketplaceABI";
+import { BackendApi } from "../mixin/backend";
 
 
 let provider: any;
 
 function Navbar() {
+    let marketplaceAddress = process.env.REACT_APP_MARKETPLACE_CONTRACT ?? "a";
     const userState = useAppSelector((state) => state.user);
     const dispatch = useAppDispatch();
 
@@ -44,6 +48,47 @@ function Navbar() {
     const onDisconnect = () => {
         dispatch(USER_RESET());
     }
+
+    useEffect(() => {
+        const backend = new BackendApi();
+
+        // listen for contract events
+        provider = ethers.getDefaultProvider(DEFAULT_ETH_PROVIDER);
+        const marketplace = new ethers.Contract(marketplaceAddress, MARKETPLACE_ABI, provider);
+
+        const buyListener = async (from: string, tokenAddress: string, tokenId: number) => {
+            console.log(`nft bought event: ${from}, ${tokenAddress}, ${tokenId}`);
+
+            const _tokenAddress = tokenAddress.toLowerCase();
+            const _tokenId = tokenId.toString().toLowerCase();
+            const _from = from.toLowerCase();
+            
+            // call db to update owner and remove listing
+            await backend.deleteListing(_tokenAddress, _tokenId);
+            await backend.updateToken(_tokenAddress, _tokenId, _from);
+        }
+
+        const sellListener = () => {
+            // call db to add new sell listing
+        }
+
+        const updateListener = () => {
+            // call db to update listing details
+        }
+
+        const cancelListener = () => {
+            // call db to remove listing
+        }
+
+        provider.once("block", () => {
+            marketplace.on("NFTBought", buyListener);
+        });
+
+        return () => {
+            marketplace.removeListener("NFTBought", buyListener);
+        }
+
+    }, []);
 
     return (
         <nav>

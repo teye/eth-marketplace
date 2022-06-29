@@ -67,7 +67,7 @@ const fetchUserOwned = async (
                     <p>You do not owned any NFTs.</p>
                     :
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-20 gap-y-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-[8rem] gap-y-8 mb-8 lg:gap-x-[18rem]">
                         {
                             data.map((item, index) => {
                                 return (
