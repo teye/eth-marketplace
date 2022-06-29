@@ -15,7 +15,6 @@ function Profile() {
     return (
         <div className="container mx-auto">
             <h1 className="font-semibold font-kanit text-3xl my-4">My Profile</h1>
-            <div className="text-gray-900 mb-12">Manage your NFTs</div>
             <div className="w-full max-w-screen-lg px-2 py-4 sm:px-0">
               <Tab.Group defaultIndex={0}>
                 <Tab.List className="flex space-x-1 rounded-xl bg-blue-900/20 p-1">

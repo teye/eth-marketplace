@@ -5,3 +5,9 @@ export type ListingDetails = {
     seller: string;
     price: string;
 }
+
+export type NFTDetails = {
+    tokenAddress: string;
+    tokenName: string;
+    tokenId: string;
+}

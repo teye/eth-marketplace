@@ -32,7 +32,7 @@ export class BackendApi {
         console.log("add minted nft to backend");
         try {
             const response = await axios.post(`${this.endpoint}/tokens`, nftJSON);
-            return response;
+            return response.data;
         } catch (error) {
             console.error(error);
             return null;
@@ -47,8 +47,8 @@ export class BackendApi {
     async getMintedNFTs(minter: string) {
         console.log("get minted nft");
         try {
-            const response = await axios.post(`${this.endpoint}/tokens/minted/${minter}`);
-            return response;
+            const response = await axios.get(`${this.endpoint}/tokens/minted/${minter}`);
+            return response.data;
         } catch (error) {
             console.error(error);
             return null;
@@ -63,8 +63,8 @@ export class BackendApi {
     async getOwnedNFTs(owner: string) {
         console.log("get owned nft");
         try {
-            const response = await axios.post(`${this.endpoint}/tokens/owned/${owner}`);
-            return response;
+            const response = await axios.get(`${this.endpoint}/tokens/owned/${owner}`);
+            return response.data;
         } catch (error) {
             console.error(error);
             return null;

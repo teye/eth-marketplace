@@ -69,7 +69,7 @@ function Explore() {
                                 return (
                                     <Link 
                                         key={index}
-                                        to={`/token/${item.tokenAddress}:${item.tokenId}`}>
+                                        to={`/sale/${item.tokenAddress}:${item.tokenId}`}>
                                         <ShopCard 
                                             {...item}
                                         />

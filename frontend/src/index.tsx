@@ -7,11 +7,12 @@ import reportWebVitals from './reportWebVitals';
 import LayoutDefault from './components/layout';
 import Explore from './components/explore';
 import Profile from './components/profile/profile';
-import TokenDetails from './components/token-details';
+import SaleDetails from './components/sale-details';
 import Error from './components/error';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 import CreateNFT from './components/create-nft';
+import TokenDetails from './components/token-details';
 
 
 const root = ReactDOM.createRoot(
@@ -27,6 +28,7 @@ root.render(
             <Route path="/create-nft" element={<CreateNFT />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/sale/:assetQuery" element={<SaleDetails />} />
             <Route path="/token/:assetQuery" element={<TokenDetails />} />
             <Route path="/error" element={<Error />} />
             <Route path="*" element={<Navigate to="/error" replace />} />

@@ -7,7 +7,7 @@ import { useAppSelector } from "../../store/hooks";
 import { ListingDetails } from "../../types/types";
 import ShopCard from "../shop-card";
 
-let provider ;
+let provider;
 
 const fetchUserListings = async (
     key: string,
@@ -55,7 +55,8 @@ function OnSale() {
 
     return (
         <div className="container mx-auto">
-            <h1 className="font-semibold font-kanit text-2xl my-4">On Sale</h1>
+            <h1 className="font-semibold font-kanit text-2xl mt-4">On Sale</h1>
+            <div className="text-gray-900 mb-8">View your listings currently put up at the marketplace.</div>
             <div>
                 {
                     !data ?
@@ -72,7 +73,7 @@ function OnSale() {
                                 return (
                                     <Link 
                                         key={index}
-                                        to={`/token/${item.tokenAddress}:${item.tokenId}`}>
+                                        to={`/sale/${item.tokenAddress}:${item.tokenId}`}>
                                         <ShopCard 
                                             {...item}
                                         />
