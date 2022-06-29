@@ -1,8 +1,9 @@
 // schema design
 
-// minted collection
+// tokens collection
 {
-    "wallet_address",
+    "minter",
+    "owner",
     "token_address",
     "token_id",
     "minted_date"

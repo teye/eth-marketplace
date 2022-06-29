@@ -125,7 +125,7 @@ listingsRoutes.route('/listings/:token_address/:token_id').put(function (req, re
         const updateQuery = {
             $set: {
                 price: req.body.price,
-                modified_Date: new Date(),
+                modified_date: new Date(),
             }
         }
 
