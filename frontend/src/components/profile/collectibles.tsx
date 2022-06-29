@@ -2,13 +2,14 @@ import { ethers } from "ethers";
 import { Link } from "react-router-dom";
 import useSWR from "swr";
 import { BASIC_NFT_ABI } from "../../abi/basicnftABI";
+import { DEFAULT_ETH_PROVIDER } from "../../constants";
 import { BackendApi } from "../../mixin/backend";
 import { useAppSelector } from "../../store/hooks";
 import { NFTDetails } from "../../types/types";
 import NFTCard from "../nft-card";
 
 
-let provider ;
+let provider;
 
 const fetchUserOwned = async (
     key: string,
@@ -17,7 +18,7 @@ const fetchUserOwned = async (
     const backend = new BackendApi();
     let nfts: NFTDetails[] = [];
 
-    provider = ethers.getDefaultProvider("http://localhost:8545");
+    provider = ethers.getDefaultProvider(DEFAULT_ETH_PROVIDER);
     provider = new ethers.providers.Web3Provider(window.ethereum);
     
     const listings = await backend.getOwnedNFTs(wallet);
@@ -25,8 +26,6 @@ const fetchUserOwned = async (
     if (!listings) {
         return nfts;
     }
-
-    console.log(listings);
 
     for (const item of listings.result) {
         const nft = new ethers.Contract(item.token_address, BASIC_NFT_ABI, provider);

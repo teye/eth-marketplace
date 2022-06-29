@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import useSWR from 'swr';
 import { BASIC_NFT_ABI } from "../abi/basicnftABI";
 import { MARKETPLACE_ABI } from "../abi/marketplaceABI";
-import { ZERO_ADDRESS } from "../constants";
+import { DEFAULT_ETH_PROVIDER, ZERO_ADDRESS } from "../constants";
 import { BackendApi } from "../mixin/backend";
 import { ListingDetails } from "../types/types";
 import ShopCard from "./shop-card";
@@ -19,7 +19,7 @@ const fetchNFTs = async (
     const backend = new BackendApi();
     let sales: ListingDetails[] = [];
     
-    provider = ethers.getDefaultProvider("http://localhost:8545");
+    provider = ethers.getDefaultProvider(DEFAULT_ETH_PROVIDER);
     provider = new ethers.providers.Web3Provider(window.ethereum);
 
     const listings = await backend.getListings();
