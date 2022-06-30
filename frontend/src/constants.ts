@@ -1,4 +1,5 @@
 export const PROGRESS = {
+    PENDING: "PENDING",
     CONFIRM: "CONFIRM"
 };
 
