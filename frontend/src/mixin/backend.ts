@@ -125,6 +125,20 @@ export class BackendApi {
     }
 
     /**
+     * update listing
+     */
+    async updateListing(tokenAddress: string, tokenId: string, priceJSON: any) {
+        console.log("update listing on backend");
+        try {
+            const response = await axios.put(`${this.endpoint}/listings/${tokenAddress}/${tokenId}`, priceJSON);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    /**
      * get all the nft listings currently sold on the marketplace
      * @returns 
      * [

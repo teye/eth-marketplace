@@ -69,7 +69,7 @@ function Navbar() {
         }
 
         const sellListener = async (from: string, tokenAddress: string, tokenId: number, price: number) => {
-            console.log(`nft sell event: ${from}, ${tokenAddress}, ${tokenId}, ${price}`);
+            console.log(`marketplace sell event: ${from}, ${tokenAddress}, ${tokenId}, ${price}`);
 
             // call db to add new sell listing
             const _tokenAddress = tokenAddress.toLowerCase();
@@ -85,13 +85,27 @@ function Navbar() {
             });
         }
 
-        const updateListener = () => {
+        const updateListener = async (from: string, tokenAddress: string, tokenId: number, price: number) => {
             // call db to update listing details
+            console.log(`marketplace update event: ${from}, ${tokenAddress}, ${tokenId}, ${price}`);
+
+            const _tokenAddress = tokenAddress.toLowerCase();
+            const _tokenId = tokenId.toString().toLowerCase();
+            const _from = from.toLowerCase();
+            const _price = price.toString();
+
+            await backend.updateListing(
+                _tokenAddress, 
+                _tokenId, 
+                {
+                    price: _price
+                }
+            );
         }
 
         const cancelListener = async (from: string, tokenAddress: string, tokenId: number) => {
             // call db to remove listing
-            console.log(`nft cancel event: ${from}, ${tokenAddress}, ${tokenId}`);
+            console.log(`marketplace cancel event: ${from}, ${tokenAddress}, ${tokenId}`);
 
             const _tokenAddress = tokenAddress.toLowerCase();
             const _tokenId = tokenId.toString().toLowerCase();
@@ -104,6 +118,7 @@ function Navbar() {
             marketplace.on("NFTBought", buyListener);
             marketplace.on("NFTListed", sellListener);
             marketplace.on("NFTDeListed", cancelListener);
+            marketplace.on("ListingUpdated", updateListener);
         });
 
         // marketplace.on("NFTBought", buyListener);
@@ -115,6 +130,7 @@ function Navbar() {
             marketplace.removeListener("NFTBought", buyListener);
             marketplace.removeListener("NFTListed", sellListener);
             marketplace.removeListener("NFTDeListed", cancelListener);
+            marketplace.removeListener("ListingUpdated", updateListener);
         }
 
     }, []);
