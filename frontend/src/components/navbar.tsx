@@ -129,14 +129,14 @@ function Navbar() {
                         </div>
                     </Link>
                 </li>
-                <li className="nav-item font-kanit text-sm text-gray-700 hover:text-violet-500 tracking-wider uppercase">
+                <li className="nav-item font-kanit text-sm text-gray-700 hover:text-blue-500 tracking-wider uppercase">
                     <Link to={`/explore`}>
                         Explore
                     </Link>
                 </li>
                 {
                     userState.isConnected &&
-                    <li className="nav-item font-kanit text-sm text-gray-700 hover:text-violet-500 tracking-wider uppercase">
+                    <li className="nav-item font-kanit text-sm text-gray-700 hover:text-blue-500 tracking-wider uppercase">
                         <Link to={`/create-nft`}>
                             Create
                         </Link>
@@ -147,7 +147,7 @@ function Navbar() {
                         !userState.isConnected 
                         &&
                         <button 
-                            className="bg-violet-600 text-white py-2 px-4 rounded mr-4"
+                            className="bg-blue-500 text-white py-2 px-4 rounded mr-4"
                             onClick={() => onConnectWallet()}>
                             Connect MetaMask
                         </button>
@@ -207,7 +207,7 @@ function Navbar() {
                                     <Link to={`/profile`}>
                                         <button
                                             className={`${
-                                            active ? 'bg-violet-500 text-white' : 'text-gray-900'
+                                            active ? 'text-blue-500' : 'text-gray-900'
                                             } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                                         >
                                             View Profile
@@ -219,7 +219,7 @@ function Navbar() {
                                     {({ active }) => (
                                     <button
                                         className={`${
-                                        active ? 'bg-violet-500 text-white' : 'text-gray-900'
+                                        active ? 'text-blue-500' : 'text-gray-900'
                                         } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                                         onClick={() => onDisconnect()}
                                     >

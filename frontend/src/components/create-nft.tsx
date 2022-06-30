@@ -5,6 +5,8 @@ import { BASIC_NFT_ABI } from "../abi/basicnftABI";
 import { MARKETPLACE_ABI } from "../abi/marketplaceABI";
 import { BackendApi } from "../mixin/backend";
 import { useAppSelector } from "../store/hooks";
+import MintModal from "../modals/mint-modal";
+import { useState } from "react";
 
 
 const BASIC_NFT_BYTECODE_JSON = require('../bytecode/basicnft_bytecode.json');
@@ -19,16 +21,56 @@ function CreateNFT() {
     const userState = useAppSelector((state) => state.user);
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
+    const [currStep, setCurrStep] = useState(1);
+    const [openModal, setOpenModal] = useState(false);
+    const [nftAddress, setnftAddress] = useState('');
+    const [progress1, setProgress1] = useState('');
+    const [progress2, setProgress2] = useState('');
+    const [progress3, setProgress3] = useState('');
+    const [progress4, setProgress4] = useState('');
+    const [tx1, setTx1] = useState('');
+    const [tx2, setTx2] = useState('');
+    const [tx3, setTx3] = useState('');
+    const [tx4, setTx4] = useState('');
+
+    /**
+     * close progress modal
+     */
+    const onCloseModal = () => {
+        // delay for the animation to close the modal
+        setOpenModal(false);
+        setTimeout(() => {
+            setCurrStep(1);
+            setnftAddress('');
+            setProgress1('');
+            setProgress2('');
+            setProgress3('');
+            setProgress4('');
+            setTx1('');
+            setTx2('');
+            setTx3('');
+            setTx4('');
+        }, 200);
+    }
+
     /**
      * deploy nft contract
      * @param data form data from react-hook-form
      */
     const onDeployNFT = async (data: any) => {
+        setProgress1('pending');
+
         nftContract = await nftFactory.deploy(data.name, data.symbol);
         const tx = await nftContract.deployTransaction.wait();
 
         console.log("token contract deployed: ", nftContract.address);
         console.log("deploy tx: ", nftContract.deployTransaction);
+
+        setProgress1('done');
+        setTx1(tx.transactionHash);
+        setnftAddress(nftContract.address);
+
+        console.log(tx);
 
         return tx;
     }
@@ -37,6 +79,9 @@ function CreateNFT() {
      * mint nft to sender wallet
      */
     const onMint = async () => {
+        setCurrStep(currStep+1);
+        setProgress2('pending');
+
         const mintTx = await nftContract.mint({
             value: ethers.utils.parseEther("0.001")
         });
@@ -45,6 +90,9 @@ function CreateNFT() {
 
         const tx = await mintTx.wait();
 
+        setProgress2('done');
+        setTx2(tx.transactionHash);
+
         return tx;
     }
 
@@ -52,6 +100,9 @@ function CreateNFT() {
      * sell nft on the marketplace; require user to approve marketplace to sell
      */
     const onSell = async (tokenId: string, salePriceWei: string) => {
+        setCurrStep(3);
+        setProgress3('pending');
+        
         // approve marketplace first
         const approvalTx = await nftContract.approve(marketplaceAddress, tokenId);
         await approvalTx.wait();
@@ -59,12 +110,21 @@ function CreateNFT() {
         const signer = provider.getSigner();
         const marketplace = new ethers.Contract(marketplaceAddress, MARKETPLACE_ABI, signer);
 
+        setProgress3('done');
+        setTx3(approvalTx.hash);
+        setCurrStep(4);
+        setProgress4('pending');
+
         const sellTx = await marketplace.sell(
             nftContract.address,
             tokenId,
             salePriceWei
         )
         await sellTx.wait();
+
+        setProgress4('done');
+        setTx4(sellTx.hash);
+
         console.log("sell nft: ", sellTx.hash);
     }
 
@@ -83,6 +143,8 @@ function CreateNFT() {
         const signer = provider.getSigner();
 
         nftFactory = new ethers.ContractFactory(BASIC_NFT_ABI, BASIC_NFT_BYTECODE_JSON.object, signer);
+
+        setOpenModal(true);
 
         try {
             // 01 - deploy nft contract
@@ -113,6 +175,7 @@ function CreateNFT() {
             })
         } catch (e) {
             console.error(e);
+            onCloseModal();
         }
     }
     
@@ -179,6 +242,20 @@ function CreateNFT() {
                         Create item
                 </button>
             </form>
+            <MintModal 
+                openModal={openModal}
+                currStep={currStep}
+                nftAddress={nftAddress}
+                progress1={progress1}
+                progress2={progress2}
+                progress3={progress3}
+                progress4={progress4}
+                tx1={tx1}
+                tx2={tx2}
+                tx3={tx3}
+                tx4={tx4}
+                onClose={onCloseModal}
+            />
         </div>
     );
 }
