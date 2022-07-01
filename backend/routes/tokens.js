@@ -170,7 +170,7 @@ tokensRoutes.route('/tokens/:token_address/:token_id').put(function (req, res) {
 /**
  * add a newly minted nft
  */
- tokensRoutes.route('/tokens').post(function (req, res) {
+ tokensRoutes.route('/tokens').post(async function (req, res) {
     const dbClient = dbo.getDB();
 
     try {
@@ -185,6 +185,19 @@ tokensRoutes.route('/tokens/:token_address/:token_id').put(function (req, res) {
             owner: req.body.owner,
             minted_date: new Date(),
             modified_date: new Date(),
+        }
+
+        const filter = {
+            token_address: req.body.token_address,
+            token_id: req.body.token_id
+        }
+
+        const existing = await dbClient
+                                    .collection('tokens')
+                                    .findOne(filter);
+        
+        if (existing) {
+            throw new Error(`token ${req.body.token_address}-${req.body.token_id} already exists`);
         }
     
         dbClient

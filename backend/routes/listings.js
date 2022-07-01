@@ -160,7 +160,7 @@ listingsRoutes.route('/listings/:token_address/:token_id').put(function (req, re
  * 
  * price in Wei
  */
-listingsRoutes.route('/listings').post(function (req, res) {
+listingsRoutes.route('/listings').post(async function (req, res) {
     const dbClient = dbo.getDB();
 
     try {
@@ -181,6 +181,19 @@ listingsRoutes.route('/listings').post(function (req, res) {
             price: req.body.price,
             listing_date: new Date(),
             modified_date: new Date(),
+        }
+
+        const filter = {
+            token_address: req.body.token_address,
+            token_id: req.body.token_id
+        }
+
+        const existing = await dbClient
+                                    .collection('listings')
+                                    .findOne(filter);
+        
+        if (existing) {
+            throw new Error(`listing ${req.body.token_address}-${req.body.token_id} already exists`);
         }
 
         dbClient
