@@ -8,8 +8,8 @@ import { Fragment, useEffect } from "react";
 import { formatAddressDisplay, truncate } from "../utils";
 import { Ethereum } from "../icons/eth";
 import { DEFAULT_ETH_PROVIDER } from "../constants";
-import { MARKETPLACE_ABI } from "../abi/marketplaceABI";
 import { BackendApi } from "../mixin/backend";
+import { MARKETPLACE_HUMAN_ABI } from "../abi/marketplaceHumanABI";
 
 
 let provider: any;
@@ -54,10 +54,10 @@ function Navbar() {
 
         // listen for contract events
         provider = ethers.getDefaultProvider(DEFAULT_ETH_PROVIDER);
-        const marketplace = new ethers.Contract(marketplaceAddress, MARKETPLACE_ABI, provider);
+        const marketplace = new ethers.Contract(marketplaceAddress, MARKETPLACE_HUMAN_ABI, provider);
 
         const buyListener = async (from: string, tokenAddress: string, tokenId: number) => {
-            console.log(`nft bought event: ${from}, ${tokenAddress}, ${tokenId}`);
+            console.log(`marketplace bought event: ${from}, ${tokenAddress}, ${tokenId}`);
 
             const _tokenAddress = tokenAddress.toLowerCase();
             const _tokenId = tokenId.toString().toLowerCase();
@@ -121,16 +121,11 @@ function Navbar() {
             marketplace.on("ListingUpdated", updateListener);
         });
 
-        // marketplace.on("NFTBought", buyListener);
-
-        // marketplace.on("NFTListed", sellListener);
-
-
         return () => {
-            marketplace.removeListener("NFTBought", buyListener);
-            marketplace.removeListener("NFTListed", sellListener);
-            marketplace.removeListener("NFTDeListed", cancelListener);
-            marketplace.removeListener("ListingUpdated", updateListener);
+            marketplace.removeAllListeners("NFTBought");
+            marketplace.removeAllListeners("NFTListed");
+            marketplace.removeAllListeners("NFTDeListed");
+            marketplace.removeAllListeners("ListingUpdated");
         }
 
     }, []);

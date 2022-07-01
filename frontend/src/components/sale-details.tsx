@@ -13,6 +13,7 @@ import { BASIC_NFT_ABI } from "../abi/basicnftABI";
 import CancelListingModal from "../modals/cancel-listing-modal";
 import CancelListing from "../modals/cancel-listing-modal";
 import UpdateListing from "../modals/update-listing-modal";
+import { MARKETPLACE_HUMAN_ABI } from "../abi/marketplaceHumanABI";
 
 
 const fetchSalesDetails = async (
@@ -116,7 +117,7 @@ function SaleDetails() {
 
         setOpenModal(true);
 
-        const deployed = new ethers.Contract(marketplaceAddress, MARKETPLACE_ABI, signer);
+        const deployed = new ethers.Contract(marketplaceAddress, MARKETPLACE_HUMAN_ABI, signer);
 
         try {
             const tx = await deployed.buy(

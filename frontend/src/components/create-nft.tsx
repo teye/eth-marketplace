@@ -2,11 +2,11 @@ import { ZERO_ADDRESS } from "../constants";
 import { useForm } from "react-hook-form";
 import { ethers } from "ethers";
 import { BASIC_NFT_ABI } from "../abi/basicnftABI";
-import { MARKETPLACE_ABI } from "../abi/marketplaceABI";
 import { BackendApi } from "../mixin/backend";
 import { useAppSelector } from "../store/hooks";
 import MintModal from "../modals/mint-modal";
 import { useState } from "react";
+import { MARKETPLACE_HUMAN_ABI } from "../abi/marketplaceHumanABI";
 
 
 const BASIC_NFT_BYTECODE_JSON = require('../bytecode/basicnft_bytecode.json');
@@ -108,7 +108,7 @@ function CreateNFT() {
         await approvalTx.wait();
 
         const signer = provider.getSigner();
-        const marketplace = new ethers.Contract(marketplaceAddress, MARKETPLACE_ABI, signer);
+        const marketplace = new ethers.Contract(marketplaceAddress, MARKETPLACE_HUMAN_ABI, signer);
 
         setProgress3('done');
         setTx3(approvalTx.hash);
@@ -167,12 +167,12 @@ function CreateNFT() {
             await onSell(tokenId, salePriceWei);
 
             // record sell listing to db
-            await backend.addListing({
-                token_address: `${nftContract.address.toLowerCase()}`,
-                token_id: `${tokenId}`,
-                seller: `${userState.wallet}`,
-                price: salePriceWei,
-            })
+            // await backend.addListing({
+            //     token_address: `${nftContract.address.toLowerCase()}`,
+            //     token_id: `${tokenId}`,
+            //     seller: `${userState.wallet}`,
+            //     price: salePriceWei,
+            // })
         } catch (e) {
             console.error(e);
             onCloseModal();

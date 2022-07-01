@@ -2,7 +2,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { ethers } from "ethers";
 import { Fragment, useState } from "react";
 import toast from "react-hot-toast";
-import { MARKETPLACE_ABI } from "../abi/marketplaceABI";
+import { MARKETPLACE_HUMAN_ABI } from "../abi/marketplaceHumanABI";
 import { PROGRESS } from "../constants";
 import { CheckCircle } from "../icons/check-circle";
 import { Spinner } from "../icons/spinner";
@@ -78,7 +78,7 @@ function UpdateListing(props: Props) {
             provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
 
-            const deployed = new ethers.Contract(marketplaceAddress, MARKETPLACE_ABI, signer);
+            const deployed = new ethers.Contract(marketplaceAddress, MARKETPLACE_HUMAN_ABI, signer);
 
             try {
                 const tx = await deployed.updateListing(
