@@ -2,6 +2,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { ethers } from "ethers";
 import { Fragment, useState } from "react";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 import { MARKETPLACE_HUMAN_ABI } from "../abi/marketplaceHumanABI";
 import { PROGRESS } from "../constants";
 import { CheckCircle } from "../icons/check-circle";
@@ -75,12 +76,13 @@ function UpdateListing(props: Props) {
 
             // input ok; proceed to update
             setProgress(PROGRESS.PENDING);
-            provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-
-            const deployed = new ethers.Contract(marketplaceAddress, MARKETPLACE_HUMAN_ABI, signer);
 
             try {
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                const signer = provider.getSigner();
+    
+                const deployed = new ethers.Contract(marketplaceAddress, MARKETPLACE_HUMAN_ABI, signer);
+
                 const tx = await deployed.updateListing(
                     tokenAddress,
                     tokenId,
@@ -89,9 +91,12 @@ function UpdateListing(props: Props) {
                 console.log("tx: ", tx.hash);
                 setProgress(PROGRESS.CONFIRM);
                 setTxHash(tx.hash);
+
             } catch (e) {
                 console.error(e);
                 toast.error("Error updating the listing. Please try again.");
+                onClose();
+                return;
             }
 
         } catch (err) {
@@ -161,17 +166,52 @@ function UpdateListing(props: Props) {
                             </div>
                             <div className="mt-4">
                                 <p className="text-sm text-gray-500">
-                                    You have updated the price.It would take a few minutes for it to take effect.
+                                    You have updated the price.
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                    It would take a few minutes for it to take effect.
                                 </p>
                                 <p className="text-sm text-gray-500">
                                     Please refresh the page again later.
                                 </p>
-                                <button 
-                                    type="button" 
-                                    className="inline-flex justify-center rounded-md border border-transparent bg-green-100 px-4 py-2 text-sm font-medium text-green-900 hover:bg-green-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 mt-2"
-                                    onClick={onClose}>
-                                    OK
-                                </button>
+                                <Link to={`/sale/${tokenAddress}:${tokenId}`}>
+                                    <button 
+                                        type="button" 
+                                        className="inline-flex justify-center rounded-md border border-transparent bg-green-100 px-4 py-2 text-sm font-medium text-green-900 hover:bg-green-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 mt-2"
+                                        onClick={onClose}
+                                    >
+                                        OK
+                                    </button>
+                                </Link>
+                            </div>
+                            </>
+
+                            :
+
+                            progress === PROGRESS.PENDING
+
+                            ?
+
+                            <>
+                            <Dialog.Title
+                                as="h3"
+                                className="text-lg font-medium leading-6 text-gray-900"
+                            >
+                                Updating Listing
+                            </Dialog.Title>
+                            <div className="mt-4 flex items-center justify-center">
+                                <Spinner
+                                    height="30"
+                                    width="30"
+                                />
+                            </div>
+                            <div className="mt-4">
+                                <p className="text-sm text-gray-500">
+                                Please wait while we process the blockchain transaction.
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                Do not close this window.
+                                </p>
                             </div>
                             </>
 
