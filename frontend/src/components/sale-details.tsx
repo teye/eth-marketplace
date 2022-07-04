@@ -151,7 +151,11 @@ function SaleDetails() {
                         <div className="text-gray-500 text-[0.9em]">
                             Owned by <span className="text-blue-500">{data.seller.toLowerCase()}</span>
                         </div>
-                        <div className="bg-white border border-gray-200 rounded-md p-4 bg-slate-50 my-8">
+                        <div className="bg-white border border-gray-200 rounded-md p-4 bg-slate-50 my-4 text-[0.9em]">
+                            <h3 className="font-semibold text-gray-500">Contract</h3>
+                            <div className="font-semibold text-blue-500">{data.tokenAddress ?? ''}</div>
+                        </div>
+                        <div className="bg-white border border-gray-200 rounded-md p-4 bg-slate-50 mt-4 mb-8">
                             <h3 className="font-semibold text-zinc-400 text-[0.9em]">Current price</h3>
                             <div className="font-bold text-3xl text-neutral-800">{ethers.utils.formatEther(data.price)} ETH</div>
                         </div>
