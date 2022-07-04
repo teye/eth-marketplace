@@ -13,11 +13,11 @@ export const MARKETPLACE_HUMAN_ABI = [
     "event NFTBought(address indexed _from, address indexed _tokenAddress, uint256 tokenId)",
     "event ListingUpdated(address indexed _from, address indexed _tokenAddress, uint256 tokenId, uint256 price)",
     "event NFTDeListed(address indexed _from, address indexed _tokenAddress, uint256 tokenId)",
-    "function sell(address tokenAddress, uint256 tokenId, uint256 price)",
-    "function buy(address tokenAddress, uint256 tokenId)",
-    "function updateListing(address tokenAddress, uint256 tokenId, uint256 newPrice)",
-    "function cancelListing(address tokenAddress, uint256 tokenId)",
-    "function withdrawPayment()",
+    "function sell(address tokenAddress, uint256 tokenId, uint256 price) external",
+    "function buy(address tokenAddress, uint256 tokenId) external payable",
+    "function updateListing(address tokenAddress, uint256 tokenId, uint256 newPrice) external",
+    "function cancelListing(address tokenAddress, uint256 tokenId) external",
+    "function withdrawPayment() external",
     "function getListing(address tokenAddress, uint256 tokenId)",
     "function getProceeds(address seller)"
 ]

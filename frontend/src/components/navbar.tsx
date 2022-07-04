@@ -4,18 +4,14 @@ import { USER_RESET, UPDATE_IS_CONNECTED, UPDATE_WALLET, UPDATE_BALANCE } from "
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { User } from "../icons/user";
 import { Menu, Transition } from '@headlessui/react'
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { formatAddressDisplay, truncate } from "../utils";
 import { Ethereum } from "../icons/eth";
-import { DEFAULT_ETH_PROVIDER } from "../constants";
-import { BackendApi } from "../mixin/backend";
-import { MARKETPLACE_HUMAN_ABI } from "../abi/marketplaceHumanABI";
 
 
 let provider: any;
 
 function Navbar() {
-    let marketplaceAddress = process.env.REACT_APP_MARKETPLACE_CONTRACT ?? "a";
     const userState = useAppSelector((state) => state.user);
     const dispatch = useAppDispatch();
 
@@ -48,87 +44,6 @@ function Navbar() {
     const onDisconnect = () => {
         dispatch(USER_RESET());
     }
-
-    useEffect(() => {
-        const backend = new BackendApi();
-
-        // listen for contract events
-        provider = ethers.getDefaultProvider(DEFAULT_ETH_PROVIDER);
-        const marketplace = new ethers.Contract(marketplaceAddress, MARKETPLACE_HUMAN_ABI, provider);
-
-        const buyListener = async (from: string, tokenAddress: string, tokenId: number) => {
-            console.log(`marketplace bought event: ${from}, ${tokenAddress}, ${tokenId}`);
-
-            const _tokenAddress = tokenAddress.toLowerCase();
-            const _tokenId = tokenId.toString().toLowerCase();
-            const _from = from.toLowerCase();
-            
-            // call db to update owner and remove listing
-            await backend.deleteListing(_tokenAddress, _tokenId);
-            await backend.updateToken(_tokenAddress, _tokenId, _from);
-        }
-
-        const sellListener = async (from: string, tokenAddress: string, tokenId: number, price: number) => {
-            console.log(`marketplace sell event: ${from}, ${tokenAddress}, ${tokenId}, ${price}`);
-
-            // call db to add new sell listing
-            const _tokenAddress = tokenAddress.toLowerCase();
-            const _tokenId = tokenId.toString().toLowerCase();
-            const _from = from.toLowerCase();
-            const _price = price.toString();
-
-            await backend.addListing({
-                token_address: _tokenAddress,
-                token_id: _tokenId,
-                seller: _from,
-                price: _price,
-            });
-        }
-
-        const updateListener = async (from: string, tokenAddress: string, tokenId: number, price: number) => {
-            // call db to update listing details
-            console.log(`marketplace update event: ${from}, ${tokenAddress}, ${tokenId}, ${price}`);
-
-            const _tokenAddress = tokenAddress.toLowerCase();
-            const _tokenId = tokenId.toString().toLowerCase();
-            const _from = from.toLowerCase();
-            const _price = price.toString();
-
-            await backend.updateListing(
-                _tokenAddress, 
-                _tokenId, 
-                {
-                    price: _price
-                }
-            );
-        }
-
-        const cancelListener = async (from: string, tokenAddress: string, tokenId: number) => {
-            // call db to remove listing
-            console.log(`marketplace cancel event: ${from}, ${tokenAddress}, ${tokenId}`);
-
-            const _tokenAddress = tokenAddress.toLowerCase();
-            const _tokenId = tokenId.toString().toLowerCase();
-            const _from = from.toLowerCase();
-
-            await backend.deleteListing(_tokenAddress, _tokenId);
-        }
-
-        provider.once("block", () => {
-            marketplace.on("NFTBought", buyListener);
-            marketplace.on("NFTListed", sellListener);
-            marketplace.on("NFTDeListed", cancelListener);
-            marketplace.on("ListingUpdated", updateListener);
-        });
-
-        return () => {
-            marketplace.removeAllListeners("NFTBought");
-            marketplace.removeAllListeners("NFTListed");
-            marketplace.removeAllListeners("NFTDeListed");
-            marketplace.removeAllListeners("ListingUpdated");
-        }
-
-    }, []);
 
     return (
         <nav>

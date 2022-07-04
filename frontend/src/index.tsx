@@ -13,11 +13,15 @@ import { Provider } from 'react-redux';
 import { store } from './store/store';
 import CreateNFT from './components/create-nft';
 import TokenDetails from './components/token-details';
+import { APP_MOUNTED } from './store/blockchainSlice';
 
+
+store.dispatch(APP_MOUNTED());
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
 root.render(
   <React.StrictMode>
     <Provider store={store}>
