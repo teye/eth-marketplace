@@ -5,6 +5,7 @@ import useSWR from "swr";
 import { BASIC_NFT_ABI } from "../abi/basicnftABI";
 import { DEFAULT_ETH_PROVIDER } from "../constants";
 import { BackendApi } from "../mixin/backend";
+import SellListing from "../modals/sell-modal";
 import { NFTDetails } from "../types/types";
 
 
@@ -76,8 +77,18 @@ function TokenDetails() {
                         <div className="text-gray-500 text-[0.9em]">
                             Owned by <span className="text-blue-500">{data.owner ?? ''}</span>
                         </div>
+                        <div className="bg-white border border-gray-200 rounded-md p-4 bg-slate-50 my-8 text-[0.9em]">
+                            <h3 className="font-semibold text-gray-500">Contract</h3>
+                            <div className="font-semibold text-blue-500">{data.tokenAddress ?? ''}</div>
+                        </div>
+                        {/* since not listed, we can add sell button */}
+                        <SellListing
+                            tokenAddress={data.tokenAddress}
+                            tokenId={data.tokenId}
+                            tokenName={data.tokenName}
+                            classNames={'mt-8'}
+                        />
                     </div>
-                    {/* since not listed, we can add sell button */}
                 </div>
             }
         </div>
