@@ -1,3 +1,6 @@
+/**
+ * human readable require otherwise the provider listener events sometimes can fail to detect the event
+ */
 export const MARKETPLACE_HUMAN_ABI = [
     "constructor()",
     "error NotApproved()",

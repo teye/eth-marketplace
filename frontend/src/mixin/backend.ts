@@ -215,4 +215,30 @@ export class BackendApi {
             return null;
         }
     }
+
+    /**
+     * upload the image and metadata to pinata cloud
+     * @param formData 
+     * @returns metadata ipfs hash
+     * {
+     *   IpfsHash
+     *   PinSize
+     *   Timestamp
+     * }
+     */
+    async uploadToIPFS(formData: any) {
+        console.log("upload to IPFS");
+        console.log(formData.get("username"));
+        try {
+            const response = await axios.post(`${this.endpoint}/minting`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
 }

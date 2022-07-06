@@ -33,6 +33,10 @@ function CreateNFT() {
     const [tx3, setTx3] = useState('');
     const [tx4, setTx4] = useState('');
 
+    const initialState = { nftImgAlt: "", nftImgSrc: "" };
+    const [file, setFile] = useState(null);
+    const [{ nftImgAlt, nftImgSrc }, setPreview] = useState(initialState);
+
     /**
      * close progress modal
      */
@@ -134,10 +138,10 @@ function CreateNFT() {
      * @returns 
      */
     const onSubmit = async (data: any) => {
-        console.log(data);
-        if (!data.name || !data.symbol || !data.salePrice) {
-            return;
-        }
+        // console.log(data);
+        // if (!data.name || !data.symbol || !data.salePrice || !nftImgSrc) {
+        //     return;
+        // }
 
         provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
@@ -147,36 +151,46 @@ function CreateNFT() {
         setOpenModal(true);
 
         try {
-            // 01 - deploy nft contract
-            // 02 - mint to wallet
-            // 03 - list nft for sale
-            await onDeployNFT(data);
-            const mintTx = await onMint();
-            const tokenId = mintTx.events[1].args.tokenId.toString();
+            // 01 - upload img and metadata to pinata
+            // 02 - deploy nft contract
+            // 03 - mint to wallet
+            // 04 - list nft for sale
 
-            // record nft owner to db
-            await backend.addMintedNFT({
-                token_address: `${nftContract.address.toLowerCase()}`,
-                token_id: `${tokenId}`,
-                minter: `${userState.wallet}`,
-                owner: `${userState.wallet}`,
-            });
+            let formData = new FormData();
 
-            const salePriceWei = ethers.utils.parseEther(`${data.salePrice}`).toString();
+            formData.append("username", "abcdefg");
+            formData.append("image", file ?? "");
 
-            await onSell(tokenId, salePriceWei);
+            console.log(formData.get('username'));
+            console.log(formData.get('image'));
 
-            // record sell listing to db
-            // await backend.addListing({
+            await backend.uploadToIPFS(formData);
+            
+            // await onDeployNFT(data);
+            // const mintTx = await onMint();
+            // const tokenId = mintTx.events[1].args.tokenId.toString();
+
+            // // record nft owner to db
+            // await backend.addMintedNFT({
             //     token_address: `${nftContract.address.toLowerCase()}`,
             //     token_id: `${tokenId}`,
-            //     seller: `${userState.wallet}`,
-            //     price: salePriceWei,
-            // })
+            //     minter: `${userState.wallet}`,
+            //     owner: `${userState.wallet}`,
+            // });
+
+            // const salePriceWei = ethers.utils.parseEther(`${data.salePrice}`).toString();
+
+            // await onSell(tokenId, salePriceWei);
         } catch (e) {
             console.error(e);
             onCloseModal();
         }
+    }
+
+    const onUpload = (e: any) => {
+        const { files } = e.target;
+        setPreview(files.length ? { nftImgSrc: URL.createObjectURL(files[0]), nftImgAlt: files[0].name } : initialState);
+        setFile(e.target.files[0]);
     }
     
     return (
@@ -185,6 +199,30 @@ function CreateNFT() {
             <div className="text-gray-900 mb-12">Create your own NFT and list it on the marketplace!</div>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="grid grid-cols-1 gap-4">
+                    <div className="mb-2">
+                        <label 
+                            htmlFor="nftImage" 
+                            className="text-gray-900 font-bold">
+                                Upload File
+                        </label>
+                        <div className="mt-4 px-4 py-4 w-1/3 flex flex-col text-center gap-y-6 border-2 border-gray-400 border-dashed rounded-xl">
+                            {
+                                nftImgSrc &&
+                                <div className="h-fit w-fit mx-auto">
+                                    <img src={nftImgSrc} alt={nftImgAlt} className="object-contain rounded-xl" />
+                                </div>
+                            }
+                            <div className="text-gray-400 text-sm font-semibold">JPG, PNG, GIF</div>
+                            <input type="file" id="nftImage" className="hidden" onChange={onUpload} accept="image/*"/>
+                            <div className="mb-4">
+                                <label 
+                                    htmlFor="nftImage"
+                                    className="cursor-pointer bg-blue-100 text-blue-600 text-sm font-bold rounded-full px-8 py-3">
+                                    { nftImgSrc ? "Reupload" : "Choose File" }
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                     <div className="mb-2">
                         <label 
                             htmlFor="name" 
@@ -213,7 +251,21 @@ function CreateNFT() {
                         />
                         {errors.symbol && <p className="text-sm text-red-500 font-bold">Symbol is required.</p>}
                     </div>
-                    <div>
+                    <div className="mb-2">
+                        <label 
+                            htmlFor="description" 
+                            className="text-gray-900 font-bold">
+                                Description
+                        </label>
+                        <input
+                            type="text"
+                            className="block w-96 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" 
+                            placeholder={`e.g. "A meteorite stone that landed near Arizona"`}
+                            {...register("description", { required: true })}
+                        />
+                        {errors.description && <p className="text-sm text-red-500 font-bold">Description is required.</p>}
+                    </div>
+                    <div className="mb-2">
                         <label 
                             htmlFor="salePrice" 
                             className="text-gray-900 font-bold">
@@ -234,6 +286,13 @@ function CreateNFT() {
                             <div className="-ml-8 font-semibold">ETH</div>
                         </div>
                         {errors.salePrice && errors.salePrice.type === "positiveNumber" && <p className="text-sm text-red-500 font-bold">Price should be a whole number or decimals, e.g. 1, 1.234</p>}
+                    </div>
+                    <div>
+                        <label 
+                            htmlFor="properties" 
+                            className="text-gray-900 font-bold">
+                                Properties <span className="text-gray-400 text-sm font-normal">(Optional)</span>
+                        </label>
                     </div>
                 </div>
                 <button 
