@@ -13,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use(require('./routes/tokens'));
 app.use(require('./routes/listings'));
+app.use(require('./routes/minting'));
 
 // global error handling
 app.use((err, req, res, next) => {
