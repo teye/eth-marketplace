@@ -7,6 +7,7 @@ import { useAppSelector } from "../store/hooks";
 import MintModal from "../modals/mint-modal";
 import { useState } from "react";
 import { MARKETPLACE_HUMAN_ABI } from "../abi/marketplaceHumanABI";
+import { BASIC_NFT_ABI_V2 } from "../abi/basicnftv2ABI";
 
 
 const BASIC_NFT_BYTECODE_JSON = require('../bytecode/basicnft_bytecode.json');
@@ -130,7 +131,11 @@ function CreateNFT() {
         setCurrStep(3);
         setProgress2('pending');
 
-        const mintTx = await nftContract.mint({
+        const tokenURI = `https://gateway.pinata.cloud/ipfs/${uploadedIPFSHash}`;
+
+        const mintTx = await nftContract.mint(
+            tokenURI,
+        {
             value: ethers.utils.parseEther("0.001")
         });
 
@@ -190,7 +195,7 @@ function CreateNFT() {
         provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
 
-        nftFactory = new ethers.ContractFactory(BASIC_NFT_ABI, BASIC_NFT_BYTECODE_JSON.object, signer);
+        nftFactory = new ethers.ContractFactory(BASIC_NFT_ABI_V2, BASIC_NFT_BYTECODE_JSON.object, signer);
 
         setOpenModal(true);
 
