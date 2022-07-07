@@ -24,6 +24,8 @@ function CreateNFT() {
     const [currStep, setCurrStep] = useState(1);
     const [openModal, setOpenModal] = useState(false);
     const [nftAddress, setnftAddress] = useState('');
+    const [uploadedIPFSHash, setUploadedIPFSHash] = useState('');
+    const [progress0, setProgress0] = useState('');
     const [progress1, setProgress1] = useState('');
     const [progress2, setProgress2] = useState('');
     const [progress3, setProgress3] = useState('');
@@ -34,8 +36,9 @@ function CreateNFT() {
     const [tx4, setTx4] = useState('');
 
     const initialState = { nftImgAlt: "", nftImgSrc: "" };
-    const [file, setFile] = useState(null);
-    const [{ nftImgAlt, nftImgSrc }, setPreview] = useState(initialState);
+    const [file, setFile] = useState(null); // save blob to transfer to backend
+    const [{ nftImgAlt, nftImgSrc }, setPreview] = useState(initialState); // for showing image preview
+    const [numAttributes, setNumAttributes] = useState(1); // used to dynamically generate the properties input
 
     /**
      * close progress modal
@@ -46,6 +49,8 @@ function CreateNFT() {
         setTimeout(() => {
             setCurrStep(1);
             setnftAddress('');
+            setUploadedIPFSHash('');
+            setProgress0('');
             setProgress1('');
             setProgress2('');
             setProgress3('');
@@ -58,10 +63,49 @@ function CreateNFT() {
     }
 
     /**
+     * upload image and metadata to ipfs
+     * @param data form data from react-hook-form
+     */
+    const onUploadIPFS = async (data: any) => {
+        setProgress0('pending');
+        let formData = new FormData();
+
+        formData.append("image", file ?? "");
+
+        formData.append("name", data.name);
+        formData.append("description", data.description);
+
+        // metadata attributes field
+        let attributes = [];
+
+        if (data.attributes) {
+            for (const attribute of data.attributes) {
+                if (attribute.trait_type && attribute.value) {
+                    console.log(attribute);
+                    attributes.push(attribute);
+                }
+            }
+        }
+
+        formData.append("attributes", JSON.stringify(attributes));
+
+        const res = await backend.uploadToIPFS(formData);
+
+        if (res.success) {
+            setUploadedIPFSHash(res.result.IpfsHash);
+        }
+
+        setProgress0('done');
+        return res;
+    }
+
+
+    /**
      * deploy nft contract
      * @param data form data from react-hook-form
      */
     const onDeployNFT = async (data: any) => {
+        setCurrStep(2);
         setProgress1('pending');
 
         nftContract = await nftFactory.deploy(data.name, data.symbol);
@@ -83,7 +127,7 @@ function CreateNFT() {
      * mint nft to sender wallet
      */
     const onMint = async () => {
-        setCurrStep(currStep+1);
+        setCurrStep(3);
         setProgress2('pending');
 
         const mintTx = await nftContract.mint({
@@ -104,7 +148,7 @@ function CreateNFT() {
      * sell nft on the marketplace; require user to approve marketplace to sell
      */
     const onSell = async (tokenId: string, salePriceWei: string) => {
-        setCurrStep(3);
+        setCurrStep(4);
         setProgress3('pending');
         
         // approve marketplace first
@@ -116,7 +160,7 @@ function CreateNFT() {
 
         setProgress3('done');
         setTx3(approvalTx.hash);
-        setCurrStep(4);
+        setCurrStep(5);
         setProgress4('pending');
 
         const sellTx = await marketplace.sell(
@@ -138,10 +182,10 @@ function CreateNFT() {
      * @returns 
      */
     const onSubmit = async (data: any) => {
-        // console.log(data);
-        // if (!data.name || !data.symbol || !data.salePrice || !nftImgSrc) {
-        //     return;
-        // }
+        console.log(data);
+        if (!data.name || !data.symbol || !data.salePrice || !file) {
+            return;
+        }
 
         provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
@@ -155,32 +199,29 @@ function CreateNFT() {
             // 02 - deploy nft contract
             // 03 - mint to wallet
             // 04 - list nft for sale
+            const uploadResponse = await onUploadIPFS(data);
 
-            let formData = new FormData();
+            console.log("ipfs upload: ", uploadResponse);
 
-            formData.append("username", "abcdefg");
-            formData.append("image", file ?? "");
+            if (!uploadResponse.success) {
+                throw new Error(uploadResponse.result);
+            }
 
-            console.log(formData.get('username'));
-            console.log(formData.get('image'));
+            await onDeployNFT(data);
+            const mintTx = await onMint();
+            const tokenId = mintTx.events[1].args.tokenId.toString();
 
-            await backend.uploadToIPFS(formData);
-            
-            // await onDeployNFT(data);
-            // const mintTx = await onMint();
-            // const tokenId = mintTx.events[1].args.tokenId.toString();
+            // record nft owner to db
+            await backend.addMintedNFT({
+                token_address: `${nftContract.address.toLowerCase()}`,
+                token_id: `${tokenId}`,
+                minter: `${userState.wallet}`,
+                owner: `${userState.wallet}`,
+            });
 
-            // // record nft owner to db
-            // await backend.addMintedNFT({
-            //     token_address: `${nftContract.address.toLowerCase()}`,
-            //     token_id: `${tokenId}`,
-            //     minter: `${userState.wallet}`,
-            //     owner: `${userState.wallet}`,
-            // });
+            const salePriceWei = ethers.utils.parseEther(`${data.salePrice}`).toString();
 
-            // const salePriceWei = ethers.utils.parseEther(`${data.salePrice}`).toString();
-
-            // await onSell(tokenId, salePriceWei);
+            await onSell(tokenId, salePriceWei);
         } catch (e) {
             console.error(e);
             onCloseModal();
@@ -293,6 +334,38 @@ function CreateNFT() {
                             className="text-gray-900 font-bold">
                                 Properties <span className="text-gray-400 text-sm font-normal">(Optional)</span>
                         </label>
+                        <div className="flex flex-col gap-y-8">
+                            {
+                                [...Array(numAttributes)].map((item: any, index) => {
+                                    /* generate numAttributes times of trait_type-value input fields */
+                                    let keyName = `attributes.${index}.trait_type`;
+                                    let keyValue = `attributes.${index}.value`;
+
+                                    return (
+                                        <div key={index} className="flex">
+                                            <input
+                                                type="text"
+                                                className="block w-90 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black pr-10 mr-8" 
+                                                placeholder={`Enter key, e.g. Color`}
+                                                {...register(keyName)}
+                                            />
+                                            <input
+                                                type="text"
+                                                className="block w-90 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black pr-10" 
+                                                placeholder={`Enter value, e.g. Blue`}
+                                                {...register(keyValue)}
+                                            />
+                                        </div>
+                                    );
+                                })
+                            }
+                            <button 
+                                type="button"
+                                className="bg-teal-100 text-teal-600 text-xs px-2 py-3 rounded-full font-bold w-36"
+                                onClick={() => setNumAttributes(numAttributes + 3)}>
+                                    Add more fields
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <button 
@@ -305,6 +378,8 @@ function CreateNFT() {
                 openModal={openModal}
                 currStep={currStep}
                 nftAddress={nftAddress}
+                uploadedIPFSHash={uploadedIPFSHash}
+                progress0={progress0}
                 progress1={progress1}
                 progress2={progress2}
                 progress3={progress3}

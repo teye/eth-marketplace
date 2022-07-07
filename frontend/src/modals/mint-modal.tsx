@@ -9,6 +9,8 @@ type Props = {
     nftAddress: string
     openModal: boolean
     currStep: number
+    uploadedIPFSHash: string
+    progress0: string
     progress1: string
     progress2: string
     progress3: string
@@ -25,6 +27,8 @@ function MintModal(props: Props) {
         nftAddress,
         openModal,
         currStep,
+        uploadedIPFSHash,
+        progress0,
         progress1,
         progress2,
         progress3,
@@ -75,17 +79,17 @@ function MintModal(props: Props) {
                     Create and List NFT
                 </Dialog.Title>
                 {/* step 1 */}
-                <div className="mt-6 flex space-x-4">
+                <div className="mt-4 flex space-x-4">
                     <div>
                         {
-                            progress1 === 'pending' &&
+                            progress0 === 'pending' &&
                             <Spinner
                                 height="30"
                                 width="30"
                             />
                         }
                         {
-                            progress1 === 'done' &&
+                            progress0 === 'done' &&
                             <CheckCircle 
                                 height="30"
                                 width="30"
@@ -93,13 +97,13 @@ function MintModal(props: Props) {
                         }
                     </div>
                     <div className="text-[0.9em] text-gray-900 font-semibold flex flex-col justify-start text-left">
-                        <div>Deploy NFT contract</div>
+                        <div>Upload Image to IPFS</div>
                         {
-                            progress1 === 'done' &&
-                            tx1 &&
+                            progress0 === 'done' &&
                             <div>
-                                <div className="text-[0.85em] text-gray-900">NFT ADDRESS: {nftAddress}</div>
-                                <div className="text-[0.85em] text-blue-400 mt-1">TX: {formatTxDisplay(tx1)}</div>
+                                <div className="text-[0.85em] text-gray-900">
+                                    URI: <a className="break-all underline text-blue-400" href={`https://gateway.pinata.cloud/ipfs/${uploadedIPFSHash}`} target="_blank" rel="noopener noreferrer">{`https://gateway.pinata.cloud/ipfs/${uploadedIPFSHash}`}</a>
+                                </div>
                             </div>
                         }
                     </div>
@@ -109,7 +113,7 @@ function MintModal(props: Props) {
                     {
                         currStep >= 2
                         ?
-                        progress2 === 'done' 
+                        progress1 === 'done' 
                         ?
                         <CheckCircle 
                             height="30"
@@ -126,11 +130,14 @@ function MintModal(props: Props) {
                         </div>
                     }
                     <div className="text-[0.9em] text-gray-900 font-semibold flex flex-col justify-start text-left">
-                        <div>Mint NFT</div>
+                        <div>Deploy NFT contract</div>
                         {
-                            progress2 === 'done' &&
-                            tx2 &&
-                            <div className="text-[0.85em] text-blue-400">TX: {formatTxDisplay(tx2)}</div>
+                            progress1 === 'done' &&
+                            tx1 &&
+                            <div>
+                                <div className="text-[0.85em] text-gray-900">NFT ADDRESS: {nftAddress}</div>
+                                <div className="text-[0.85em] text-blue-400 mt-1">TX: {formatTxDisplay(tx1)}</div>
+                            </div>
                         }
                     </div>
                 </div>
@@ -139,7 +146,7 @@ function MintModal(props: Props) {
                     {
                         currStep >= 3
                         ?
-                        progress3 === 'done' 
+                        progress2 === 'done' 
                         ?
                         <CheckCircle 
                             height="30"
@@ -156,11 +163,11 @@ function MintModal(props: Props) {
                         </div>
                     }
                     <div className="text-[0.9em] text-gray-900 font-semibold flex flex-col justify-start text-left">
-                        <div>Grant marketplace permisson to sell</div>
+                        <div>Mint NFT</div>
                         {
-                            progress3 === 'done' &&
-                            tx3 &&
-                            <div className="text-[0.85em] text-blue-400">TX: {formatTxDisplay(tx3)}</div>
+                            progress2 === 'done' &&
+                            tx2 &&
+                            <div className="text-[0.85em] text-blue-400">TX: {formatTxDisplay(tx2)}</div>
                         }
                     </div>
                 </div>
@@ -169,7 +176,7 @@ function MintModal(props: Props) {
                     {
                         currStep >= 4
                         ?
-                        progress4 === 'done' 
+                        progress3 === 'done' 
                         ?
                         <CheckCircle 
                             height="30"
@@ -186,6 +193,36 @@ function MintModal(props: Props) {
                         </div>
                     }
                     <div className="text-[0.9em] text-gray-900 font-semibold flex flex-col justify-start text-left">
+                        <div>Grant marketplace permisson to sell</div>
+                        {
+                            progress3 === 'done' &&
+                            tx3 &&
+                            <div className="text-[0.85em] text-blue-400">TX: {formatTxDisplay(tx3)}</div>
+                        }
+                    </div>
+                </div>
+                {/* step 5 */}
+                <div className="mt-4 flex space-x-4">
+                    {
+                        currStep >= 5
+                        ?
+                        progress4 === 'done' 
+                        ?
+                        <CheckCircle 
+                            height="30"
+                            width="30"
+                        />
+                        :
+                        <Spinner
+                            height="30"
+                            width="30"
+                        />
+                        :
+                        <div className="w-7 h-7 rounded-full bg-gray-200 flex justify-center items-center">
+                            <p className="text-[0.7em] text-gray-500 font-semibold">5</p>
+                        </div>
+                    }
+                    <div className="text-[0.9em] text-gray-900 font-semibold flex flex-col justify-start text-left">
                         <div>Listing NFT on marketplace</div>
                         {
                             progress4 === 'done' &&
@@ -195,7 +232,7 @@ function MintModal(props: Props) {
                     </div>
                 </div>
                 {
-                    currStep >= 4 &&
+                    currStep >= 5 &&
                     progress4 === 'done' &&
                     <div className="mt-8 text-[0.9em]">
                        <p>NFT minted and listed!</p>

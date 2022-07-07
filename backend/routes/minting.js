@@ -12,8 +12,10 @@ const mintingRoutes = express.Router();
 /**
  * call pinata sdk to upload image and metadata
  * 
- * @param req.files[0] User uploaded image file as a Blob
- * @param req.body.metadata user uploaded metadata
+ * @param req.files[0]          User uploaded image file as a Blob
+ * @param req.body.name         nft name
+ * @param req.body.description  nft description
+ * @param req.body.attributes   user uploaded metadata [{ trait_type: '', value: '' }]
  * @returns the metadata ipfs hash if uploaded successfully
  * {
  *   IpfsHash
@@ -22,20 +24,31 @@ const mintingRoutes = express.Router();
  * }
  */
 mintingRoutes.route('/minting').post(upload.any(), function (req, res, next) {
-    console.log('request: ', req.body.username);
     console.log('request file: ', req.files);
+    console.log('req body: ', req.body);
 
     try {
+        if (!req.body ||
+            !req.body.name ||
+            !req.body.description ||
+            !req.body.attributes || 
+            !req.files)
+        {
+            throw new Error('invalid params');
+        }
+
         // file has been uploaded to /tmp as another name
         const uploadedDest = req.files[0].filename;
         const readableStreamForFile = fs.createReadStream(`/tmp/${uploadedDest}`);
 
+        const { name, description, attributes } = req.body;
+
         let metadata = {
-            "description": "sea creatures",
+            "description": description,
             "external_url": "https://image.com",
             "image": "https://storage.com",
-            "name": "Star",
-            "attributes": [],
+            "name": name,
+            "attributes": JSON.parse(attributes),
         }
 
         pinata.pinFileToIPFS(readableStreamForFile).then((result) => {

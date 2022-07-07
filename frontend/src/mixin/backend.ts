@@ -228,7 +228,6 @@ export class BackendApi {
      */
     async uploadToIPFS(formData: any) {
         console.log("upload to IPFS");
-        console.log(formData.get("username"));
         try {
             const response = await axios.post(`${this.endpoint}/minting`, formData, {
                 headers: {
