@@ -1,14 +1,10 @@
-import { ethers } from "ethers";
 import { Link } from "react-router-dom";
 import useSWR from "swr";
-import { BASIC_NFT_ABI } from "../../abi/basicnftABI";
-import { DEFAULT_ETH_PROVIDER } from "../../constants";
 import { BackendApi } from "../../mixin/backend";
 import { useAppSelector } from "../../store/hooks";
 import { ListingDetails } from "../../types/types";
 import ShopCard from "../shop-card";
 
-let provider;
 
 const fetchUserListings = async (
     key: string,
@@ -17,9 +13,6 @@ const fetchUserListings = async (
     const backend = new BackendApi();
     let sales: ListingDetails[] = [];
 
-    provider = ethers.getDefaultProvider(DEFAULT_ETH_PROVIDER);
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-    
     const listings = await backend.getListingsBySeller(wallet);
 
     if (!listings) {
@@ -27,12 +20,12 @@ const fetchUserListings = async (
     }
 
     for (const item of listings.result) {
-        const nft = new ethers.Contract(item.token_address, BASIC_NFT_ABI, provider);
-        const tokenName = await nft.name();
+        const nftDetails = await backend.getTokenInfo(item.token_address, item.token_id);
 
         sales.push({
             tokenAddress: item.token_address,
-            tokenName: tokenName,
+            tokenName: nftDetails.result.token_name ?? "",
+            tokenURI: nftDetails.result.token_uri ?? "",
             tokenId: item.token_id,
             seller: item.seller,
             price: item.price,

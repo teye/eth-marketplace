@@ -1,15 +1,10 @@
-import { ethers } from "ethers";
 import { Link } from "react-router-dom";
 import useSWR from "swr";
-import { BASIC_NFT_ABI } from "../../abi/basicnftABI";
-import { DEFAULT_ETH_PROVIDER } from "../../constants";
 import { BackendApi } from "../../mixin/backend";
 import { useAppSelector } from "../../store/hooks";
 import { NFTDetails } from "../../types/types";
 import NFTCard from "../nft-card";
 
-
-let provider;
 
 const fetchUserMinted = async (
     key: string,
@@ -17,9 +12,6 @@ const fetchUserMinted = async (
 ) => {
     const backend = new BackendApi();
     let nfts: NFTDetails[] = [];
-
-    provider = ethers.getDefaultProvider(DEFAULT_ETH_PROVIDER);
-    provider = new ethers.providers.Web3Provider(window.ethereum);
     
     const listings = await backend.getMintedNFTs(wallet);
 
@@ -28,15 +20,13 @@ const fetchUserMinted = async (
     }
 
     for (const item of listings.result) {
-        const nft = new ethers.Contract(item.token_address, BASIC_NFT_ABI, provider);
-        const tokenName = await nft.name();
-
         const listing = await backend.getListingByToken(item.token_address, item.token_id);
         const isListed = listing.result ? true : false;
 
         nfts.push({
             tokenAddress: item.token_address,
-            tokenName: tokenName,
+            tokenName: item.token_name,
+            tokenURI: item.token_uri,
             tokenId: item.token_id,
             owner: item.owner,
             isListed,
