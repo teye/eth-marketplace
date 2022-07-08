@@ -1,7 +1,6 @@
 import { ZERO_ADDRESS } from "../constants";
 import { useForm } from "react-hook-form";
 import { ethers } from "ethers";
-import { BASIC_NFT_ABI } from "../abi/basicnftABI";
 import { BackendApi } from "../mixin/backend";
 import { useAppSelector } from "../store/hooks";
 import MintModal from "../modals/mint-modal";

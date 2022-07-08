@@ -1,9 +1,7 @@
-import { ethers } from "ethers";
+import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useSWR from "swr";
-import { BASIC_NFT_ABI } from "../abi/basicnftABI";
-import { DEFAULT_ETH_PROVIDER } from "../constants";
 import { BackendApi } from "../mixin/backend";
 import SellListing from "../modals/sell-modal";
 import { NFTDetails } from "../types/types";
@@ -21,6 +19,11 @@ const fetchNFTDetails = async (
         isListed: false,
     };
 
+    let result = {
+        nftDetails,
+        imgURI: '',
+    }
+
     const assetQueryArray = assetQuery?.split(":") ?? [];
 
     if (assetQueryArray.length === 2) {
@@ -32,19 +35,20 @@ const fetchNFTDetails = async (
         const tokenInfo = await backend.getTokenInfo(_tokenAddress, _tokenId);
 
         if (!tokenInfo) {
-            return nftDetails;
+            return result;
         }
 
-        const provider = ethers.getDefaultProvider(DEFAULT_ETH_PROVIDER);
-        const nft = new ethers.Contract(_tokenAddress, BASIC_NFT_ABI, provider);
-        nftDetails.tokenName = await nft.name();
+        const metadata = await axios.get(tokenInfo.result.token_uri);
 
+        result.imgURI = metadata.data.image
+
+        nftDetails.tokenName = tokenInfo.result.token_name;
         nftDetails.tokenAddress = _tokenAddress;
         nftDetails.tokenId = _tokenId;
         nftDetails.owner = tokenInfo.result.owner;
     }
 
-    return nftDetails;
+    return result;
 }
 
 /**
@@ -57,7 +61,7 @@ function TokenDetails() {
     const { data, error } = useSWR([`swr_fetch_nft_details`, assetQuery], fetchNFTDetails);
 
     useEffect(() => {
-        if (data && (!data?.tokenAddress || !data.tokenId)) {
+        if (data && (!data?.nftDetails.tokenAddress || !data.nftDetails.tokenId)) {
             navigate("/error", { replace: true })
         }
     }, [data, navigate]);
@@ -70,22 +74,22 @@ function TokenDetails() {
                 :
                 <div className="grid grid-cols-1 md:grid-cols-2">
                     {/* nft image */}
-                    <div className="rounded-xl bg-slate-800 h-[400px] w-[400px]"></div>
+                    <img src={data.imgURI} alt="" className="object-contain h-[400px] w-[400px] rounded-xl border-2 border-gray-100" />
                     {/* nft details */}
                     <div className="p-4">
-                        <h1 className="font-semibold text-xl">{data.tokenName} #{data.tokenId}</h1>
+                        <h1 className="font-semibold text-xl">{data.nftDetails.tokenName} #{data.nftDetails.tokenId}</h1>
                         <div className="text-gray-500 text-[0.9em]">
-                            Owned by <span className="text-blue-500">{data.owner ?? ''}</span>
+                            Owned by <span className="text-blue-500">{data.nftDetails.owner ?? ''}</span>
                         </div>
                         <div className="bg-white border border-gray-200 rounded-md p-4 bg-slate-50 my-8 text-[0.9em]">
                             <h3 className="font-semibold text-gray-500">Contract</h3>
-                            <div className="font-semibold text-blue-500">{data.tokenAddress ?? ''}</div>
+                            <div className="font-semibold text-blue-500">{data.nftDetails.tokenAddress ?? ''}</div>
                         </div>
                         {/* since not listed, we can add sell button */}
                         <SellListing
-                            tokenAddress={data.tokenAddress}
-                            tokenId={data.tokenId}
-                            tokenName={data.tokenName}
+                            tokenAddress={data.nftDetails.tokenAddress}
+                            tokenId={data.nftDetails.tokenId}
+                            tokenName={data.nftDetails.tokenName}
                             classNames={'mt-8'}
                         />
                     </div>

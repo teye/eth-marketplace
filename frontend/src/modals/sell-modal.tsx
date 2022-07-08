@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import { Fragment, useState } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { BASIC_NFT_ABI } from "../abi/basicnftABI";
+import { BASIC_NFT_ABI_V2 } from "../abi/basicnftv2ABI";
 import { MARKETPLACE_HUMAN_ABI } from "../abi/marketplaceHumanABI";
 import { CheckCircle } from "../icons/check-circle";
 import { Spinner } from "../icons/spinner";
@@ -70,7 +70,7 @@ function SellListing(props: Props) {
         provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
 
-        const nftContract = new ethers.Contract(tokenAddress, BASIC_NFT_ABI, signer);
+        const nftContract = new ethers.Contract(tokenAddress, BASIC_NFT_ABI_V2, signer);
         const approvalTx = await nftContract.approve(marketplaceAddress, tokenId);
 
         return approvalTx;
