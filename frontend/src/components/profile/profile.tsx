@@ -2,6 +2,7 @@ import { Tab } from '@headlessui/react'
 import OnSale from "./on-sale";
 import Collectibles from "./collectibles";
 import Minted from "./minted";
+import Revenue from './revenue';
 
 
 /**
@@ -27,6 +28,10 @@ function Profile() {
                     className={({ selected }) => `${selected ? `border-b-black font-bold` : 'border-b-transparent'} border-b-2 bg-white p-2` }>
                     Minted
                   </Tab>
+                  <Tab
+                    className={({ selected }) => `${selected ? `border-b-black font-bold` : 'border-b-transparent'} border-b-2 bg-white p-2` }>
+                    Revenue
+                  </Tab>
                 </Tab.List>
                 <Tab.Panels>
                   <Tab.Panel>
@@ -37,6 +42,9 @@ function Profile() {
                   </Tab.Panel>
                   <Tab.Panel>
                     <Minted />
+                  </Tab.Panel>
+                  <Tab.Panel>
+                    <Revenue />
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>

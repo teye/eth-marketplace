@@ -22,5 +22,5 @@ export const MARKETPLACE_HUMAN_ABI = [
     "function cancelListing(address tokenAddress, uint256 tokenId) external",
     "function withdrawPayment() external",
     "function getListing(address tokenAddress, uint256 tokenId)",
-    "function getProceeds(address seller)"
+    "function getProceeds(address seller) external view returns (uint256)"
 ]
