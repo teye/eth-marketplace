@@ -3,6 +3,8 @@ const axios = require('axios').default;
 type NFTJSON = {
     token_address: string;
     token_id: string;
+    token_name: string;
+    token_uri: string;
     minter: string;
     owner: string;
 }

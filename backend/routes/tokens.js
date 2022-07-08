@@ -174,13 +174,22 @@ tokensRoutes.route('/tokens/:token_address/:token_id').put(function (req, res) {
     const dbClient = dbo.getDB();
 
     try {
-        if (!req.body || !req.body.token_address || !req.body.token_id || !req.body.minter || !req.body.owner) {
+        if (
+            !req.body || 
+            !req.body.token_address || 
+            !req.body.token_id ||
+            !req.body.token_name ||
+            !req.body.token_uri || 
+            !req.body.minter || 
+            !req.body.owner) {
             throw new Error('invalid body request');
         }
 
         const minted = {
             token_address: req.body.token_address,
             token_id: req.body.token_id,
+            token_name: req.body.token_name,
+            token_uri: req.body.token_uri,
             minter: req.body.minter,
             owner: req.body.owner,
             minted_date: new Date(),

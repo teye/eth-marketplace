@@ -9,7 +9,7 @@ type Props = {
     nftAddress: string
     openModal: boolean
     currStep: number
-    uploadedIPFSHash: string
+    metadataIPFS: string
     progress0: string
     progress1: string
     progress2: string
@@ -27,7 +27,7 @@ function MintModal(props: Props) {
         nftAddress,
         openModal,
         currStep,
-        uploadedIPFSHash,
+        metadataIPFS,
         progress0,
         progress1,
         progress2,
@@ -102,7 +102,7 @@ function MintModal(props: Props) {
                             progress0 === 'done' &&
                             <div>
                                 <div className="text-[0.85em] text-gray-900">
-                                    URI: <a className="break-all underline text-blue-400" href={`https://gateway.pinata.cloud/ipfs/${uploadedIPFSHash}`} target="_blank" rel="noopener noreferrer">{`https://gateway.pinata.cloud/ipfs/${uploadedIPFSHash}`}</a>
+                                    URI: <a className="break-all underline text-blue-400" href={`https://gateway.pinata.cloud/ipfs/${metadataIPFS}`} target="_blank" rel="noopener noreferrer">{`https://gateway.pinata.cloud/ipfs/${metadataIPFS}`}</a>
                                 </div>
                             </div>
                         }

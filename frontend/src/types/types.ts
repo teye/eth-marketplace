@@ -2,6 +2,7 @@ export type ListingDetails = {
     tokenAddress: string;
     tokenName: string;
     tokenId: string;
+    tokenURI?: string;
     seller: string;
     price: string;
 }

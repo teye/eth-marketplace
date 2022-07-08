@@ -10,7 +10,7 @@ import { MARKETPLACE_HUMAN_ABI } from "../abi/marketplaceHumanABI";
 import { BASIC_NFT_ABI_V2 } from "../abi/basicnftv2ABI";
 
 
-const BASIC_NFT_BYTECODE_JSON = require('../bytecode/basicnft_bytecode.json');
+const BASIC_NFT_V2_BYTECODE_JSON = require('../bytecode/basicnftv2_bytecode.json');
 let provider: any;
 
 function CreateNFT() {
@@ -25,7 +25,7 @@ function CreateNFT() {
     const [currStep, setCurrStep] = useState(1);
     const [openModal, setOpenModal] = useState(false);
     const [nftAddress, setnftAddress] = useState('');
-    const [uploadedIPFSHash, setUploadedIPFSHash] = useState('');
+    const [metadataIPFS, setMetadataIPFS] = useState('');
     const [progress0, setProgress0] = useState('');
     const [progress1, setProgress1] = useState('');
     const [progress2, setProgress2] = useState('');
@@ -50,7 +50,7 @@ function CreateNFT() {
         setTimeout(() => {
             setCurrStep(1);
             setnftAddress('');
-            setUploadedIPFSHash('');
+            setMetadataIPFS('');
             setProgress0('');
             setProgress1('');
             setProgress2('');
@@ -93,7 +93,7 @@ function CreateNFT() {
         const res = await backend.uploadToIPFS(formData);
 
         if (res.success) {
-            setUploadedIPFSHash(res.result.IpfsHash);
+            setMetadataIPFS(res.result.metadataIPFSHash);
         }
 
         setProgress0('done');
@@ -127,11 +127,9 @@ function CreateNFT() {
     /**
      * mint nft to sender wallet
      */
-    const onMint = async () => {
+    const onMint = async (tokenURI: string) => {
         setCurrStep(3);
         setProgress2('pending');
-
-        const tokenURI = `https://gateway.pinata.cloud/ipfs/${uploadedIPFSHash}`;
 
         const mintTx = await nftContract.mint(
             tokenURI,
@@ -195,7 +193,7 @@ function CreateNFT() {
         provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
 
-        nftFactory = new ethers.ContractFactory(BASIC_NFT_ABI_V2, BASIC_NFT_BYTECODE_JSON.object, signer);
+        nftFactory = new ethers.ContractFactory(BASIC_NFT_ABI_V2, BASIC_NFT_V2_BYTECODE_JSON.object, signer);
 
         setOpenModal(true);
 
@@ -212,14 +210,18 @@ function CreateNFT() {
                 throw new Error(uploadResponse.result);
             }
 
+            const tokenURI = `https://gateway.pinata.cloud/ipfs/${uploadResponse.result.metadataIPFSHash}`;
+
             await onDeployNFT(data);
-            const mintTx = await onMint();
+            const mintTx = await onMint(tokenURI);
             const tokenId = mintTx.events[1].args.tokenId.toString();
 
             // record nft owner to db
             await backend.addMintedNFT({
                 token_address: `${nftContract.address.toLowerCase()}`,
                 token_id: `${tokenId}`,
+                token_name: `${data.name}`,
+                token_uri: `${tokenURI}`,
                 minter: `${userState.wallet}`,
                 owner: `${userState.wallet}`,
             });
@@ -375,7 +377,7 @@ function CreateNFT() {
                 </div>
                 <button 
                     type="submit"
-                    className="mt-12 bg-blue-600 text-white text-sm px-4 py-2 rounded font-bold">
+                    className="mt-12 mb-8 bg-blue-600 text-white text-sm px-4 py-2 rounded font-bold">
                         Create item
                 </button>
             </form>
@@ -383,7 +385,7 @@ function CreateNFT() {
                 openModal={openModal}
                 currStep={currStep}
                 nftAddress={nftAddress}
-                uploadedIPFSHash={uploadedIPFSHash}
+                metadataIPFS={metadataIPFS}
                 progress0={progress0}
                 progress1={progress1}
                 progress2={progress2}

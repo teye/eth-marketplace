@@ -16,11 +16,10 @@ const mintingRoutes = express.Router();
  * @param req.body.name         nft name
  * @param req.body.description  nft description
  * @param req.body.attributes   user uploaded metadata [{ trait_type: '', value: '' }]
- * @returns the metadata ipfs hash if uploaded successfully
+ * @returns the metadata ipfs hash and image ipfs hash
  * {
- *   IpfsHash
- *   PinSize
- *   Timestamp
+ *   imgIPFSHash
+ *   metadataIPFSHash
  * }
  */
 mintingRoutes.route('/minting').post(upload.any(), function (req, res, next) {
@@ -54,7 +53,8 @@ mintingRoutes.route('/minting').post(upload.any(), function (req, res, next) {
         pinata.pinFileToIPFS(readableStreamForFile).then((result) => {
             console.log(result);
             if (result) {
-                const imgIPFSUrl = `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`
+                let imgIPFSHash = result.IpfsHash;
+                const imgIPFSUrl = `https://gateway.pinata.cloud/ipfs/${imgIPFSHash}`
     
                 console.log("uploading metadata to ipfs");
     
@@ -65,7 +65,14 @@ mintingRoutes.route('/minting').post(upload.any(), function (req, res, next) {
                 pinata.pinJSONToIPFS(metadata).then((result) => {
                     console.log("pin json to ipfs");
                     console.log(result);
-                    res.status(200).json({ success: true, result: result });
+
+                    let metadataIPFSHash = result.IpfsHash;
+
+                    const response = {
+                        imgIPFSHash: imgIPFSHash,
+                        metadataIPFSHash: metadataIPFSHash
+                    }
+                    res.status(200).json({ success: true, result: response });
                 }).catch((err) => {
                     console.log(err);
                     throw new Error(err);

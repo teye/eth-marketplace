@@ -6,6 +6,8 @@
     "owner",
     "token_address",
     "token_id",
+    "token_name",
+    "token_uri",
     "minted_date",
     "modified_date"
 }

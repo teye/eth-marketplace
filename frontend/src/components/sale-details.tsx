@@ -2,18 +2,16 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ethers } from "ethers";
 import useSWR from "swr";
-import { MARKETPLACE_ABI } from "../abi/marketplaceABI";
 import { useAppSelector } from "../store/hooks";
 import toast from "react-hot-toast";
 import BuyModal from "../modals/buy-modal";
-import { DEFAULT_ETH_PROVIDER, PROGRESS } from "../constants";
+import { PROGRESS } from "../constants";
 import { BackendApi } from "../mixin/backend";
 import { ListingDetails } from "../types/types";
-import { BASIC_NFT_ABI } from "../abi/basicnftABI";
-import CancelListingModal from "../modals/cancel-listing-modal";
 import CancelListing from "../modals/cancel-listing-modal";
 import UpdateListing from "../modals/update-listing-modal";
 import { MARKETPLACE_HUMAN_ABI } from "../abi/marketplaceHumanABI";
+import axios from "axios";
 
 
 const fetchSalesDetails = async (
@@ -21,13 +19,18 @@ const fetchSalesDetails = async (
     marketplaceAddress: string,
     assetQuery: string
 ) => {
-    let result: ListingDetails = {
+    let listingDetails: ListingDetails = {
         tokenAddress: '',
         tokenId: '',
         tokenName: '',
         price: '0',
         seller: '',
     };
+
+    let result = {
+        listingDetails,
+        imgURI: '',
+    }
 
     const assetQueryArray = assetQuery?.split(":") ?? [];
 
@@ -43,14 +46,16 @@ const fetchSalesDetails = async (
             return result;
         }
 
-        const provider = ethers.getDefaultProvider(DEFAULT_ETH_PROVIDER);
-        const nft = new ethers.Contract(_tokenAddress, BASIC_NFT_ABI, provider);
-        result.tokenName = await nft.name();
+        const nftDetails = await backend.getTokenInfo(_tokenAddress, _tokenId);
+        const metadata = await axios.get(nftDetails.result.token_uri);
 
-        result.tokenAddress = _tokenAddress;
-        result.tokenId = _tokenId;
-        result.price = listing.result.price;
-        result.seller = listing.result.seller;
+        result.imgURI = metadata.data.image
+
+        listingDetails.tokenName = nftDetails.result.token_name ?? "";
+        listingDetails.tokenAddress = _tokenAddress;
+        listingDetails.tokenId = _tokenId;
+        listingDetails.price = listing.result.price;
+        listingDetails.seller = listing.result.seller;
     }
 
     return result;
@@ -70,7 +75,7 @@ function SaleDetails() {
     const [txHash, setTxHash] = useState("");
 
     useEffect(() => {
-        if (data && (!data?.tokenAddress || !data.tokenId)) {
+        if (data && (!data?.listingDetails.tokenAddress || !data.listingDetails.tokenId)) {
             navigate("/error", { replace: true })
         }
     }, [data, navigate]);
@@ -144,45 +149,49 @@ function SaleDetails() {
                 :
                 <div className="grid grid-cols-1 md:grid-cols-2">
                     {/* nft image */}
-                    <div className="rounded-xl bg-slate-800 h-[400px] w-[400px]"></div>
+                    <img src={data.imgURI} alt="" className="object-contain h-[400px] w-[400px] rounded-xl border-2 border-gray-100" />
                     {/* nft details */}
                     <div className="p-4">
-                        <h1 className="font-semibold text-xl">{data.tokenName} #{data.tokenId}</h1>
+                        <h1 className="font-semibold text-xl">{data.listingDetails.tokenName} #{data.listingDetails.tokenId}</h1>
                         <div className="text-gray-500 text-[0.9em]">
-                            Owned by <span className="text-blue-500">{data.seller.toLowerCase()}</span>
+                            Owned by <span className="text-blue-500">{data.listingDetails.seller.toLowerCase()}</span>
                         </div>
                         <div className="bg-white border border-gray-200 rounded-md p-4 bg-slate-50 my-4 text-[0.9em]">
                             <h3 className="font-semibold text-gray-500">Contract</h3>
-                            <div className="font-semibold text-blue-500">{data.tokenAddress ?? ''}</div>
+                            <div className="font-semibold text-blue-500">{data.listingDetails.tokenAddress ?? ''}</div>
                         </div>
                         <div className="bg-white border border-gray-200 rounded-md p-4 bg-slate-50 mt-4 mb-8">
                             <h3 className="font-semibold text-zinc-400 text-[0.9em]">Current price</h3>
-                            <div className="font-bold text-3xl text-neutral-800">{ethers.utils.formatEther(data.price)} ETH</div>
+                            <div className="font-bold text-3xl text-neutral-800">{ethers.utils.formatEther(data.listingDetails.price)} ETH</div>
                         </div>
                         {
                             (
-                                data.seller &&
-                                data.price
+                                data.listingDetails.seller &&
+                                data.listingDetails.price
                             ) 
                             ?
-                            userState.wallet === data.seller
+                            userState.wallet === data.listingDetails.seller
                             ?
                             <div className="flex">
                                 {/* seller can update or cancel listing */}
                                 <UpdateListing
-                                    tokenAddress={data.tokenAddress}
-                                    tokenId={data.tokenId}
-                                    price={data.price}
+                                    tokenAddress={data.listingDetails.tokenAddress}
+                                    tokenId={data.listingDetails.tokenId}
+                                    price={data.listingDetails.price}
                                 />
                                 <CancelListing 
-                                    tokenAddress={data.tokenAddress}
-                                    tokenId={data.tokenId}
+                                    tokenAddress={data.listingDetails.tokenAddress}
+                                    tokenId={data.listingDetails.tokenId}
                                 />
                             </div>
                             :
                             <button 
                                 className="bg-black font-bold text-sm text-white py-2 px-6 rounded mr-4"
-                                onClick={() => onBuy(data.tokenAddress, data.tokenId, data.price)}>
+                                onClick={() => onBuy(
+                                    data.listingDetails.tokenAddress, 
+                                    data.listingDetails.tokenId, 
+                                    data.listingDetails.price)
+                                }>
                                 Buy now
                             </button>
                             :
