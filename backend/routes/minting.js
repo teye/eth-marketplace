@@ -60,9 +60,14 @@ mintingRoutes.route('/minting').post(upload.any(), function (req, res, next) {
     
                 metadata["external_url"] = imgIPFSUrl;
                 metadata["image"] = imgIPFSUrl;
+
+                let pinataMetadata = {
+                    name: name,
+                    keyvalues: {}
+                }
                 
                 // upload metadata
-                pinata.pinJSONToIPFS(metadata).then((result) => {
+                pinata.pinJSONToIPFS(metadata, pinataMetadata).then((result) => {
                     console.log("pin json to ipfs");
                     console.log(result);
 
