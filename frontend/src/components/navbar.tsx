@@ -4,7 +4,7 @@ import { USER_RESET, UPDATE_IS_CONNECTED, UPDATE_WALLET, UPDATE_BALANCE } from "
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { User } from "../icons/user";
 import { Menu, Transition } from '@headlessui/react'
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { formatAddressDisplay, truncate } from "../utils";
 import { Ethereum } from "../icons/eth";
 
@@ -44,6 +44,45 @@ function Navbar() {
     const onDisconnect = () => {
         dispatch(USER_RESET());
     }
+
+    /**
+     * on metamask change account - update redux store and balance
+     * @param accounts 
+     * @returns 
+     */
+    const onAccountsChange = (accounts: any) => {
+        console.log("new accounts: ", accounts);
+        
+        if (accounts.length === 0) {
+            return;
+        }
+
+        dispatch(UPDATE_WALLET(accounts[0]));
+
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        
+        provider.getBalance(accounts[0])
+            .then((result: any) => {
+                const bal = ethers.utils.formatEther(result);
+                dispatch(UPDATE_BALANCE(bal));
+            });
+    }
+
+    useEffect(() => {
+        if (!window.ethereum) {
+            return;
+        }
+      
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+
+        const { provider: ethereum } = provider;
+
+        ethereum.on('accountsChanged', onAccountsChange)
+
+        return () => {
+            ethereum.removeListener('accountsChanged', onAccountsChange);
+        }
+    }, []);
 
     return (
         <nav>

@@ -41,7 +41,11 @@ const fetchNFTs = async (
 
 function Explore() {
     let marketplaceAddress = process.env.REACT_APP_MARKETPLACE_CONTRACT ?? ZERO_ADDRESS;
-    const { data, error } = useSWR([`swr_fetch_nft`, marketplaceAddress], fetchNFTs);
+    const { data, error } = useSWR(
+        [`swr_fetch_nft`, marketplaceAddress], 
+        fetchNFTs,
+        { revalidateOnFocus: false, refreshInterval: 0 }
+    );
 
     return (
         <div className="container mx-auto">
