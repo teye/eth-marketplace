@@ -1,6 +1,9 @@
 # eth-marketplace
 A self-study project to create a marketplace on ethereum
 
+![image](https://user-images.githubusercontent.com/6906654/178188853-90741b30-3ffc-431f-a50e-069bd0bb7bb2.png)
+
+
 ## Table of Contents
 
 - [1. About the Project](#1-about-the-project)
@@ -158,6 +161,10 @@ webpack compiled with 1 warning
 No issues found.
 ```
 
-Done. Browse your app at https://localhost:3000.
+Done. Browse your app at https://localhost:3000. 
+
+You should see this homepage:
+![image](https://user-images.githubusercontent.com/6906654/178188876-c7c372cf-5088-422c-9f3d-f5d545357d34.png)
+
 
 ## 4. Deployment (Dockerized)
