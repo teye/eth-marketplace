@@ -126,7 +126,7 @@ function WithdrawPayment(props: Props) {
                             </div>
                             <div className="mt-4">
                                 <p className="text-sm text-gray-500">
-                                    You have withdrawn ETH.
+                                    You have withdrawn {ethers.utils.formatEther(profits)} ETH.
                                 </p>
                                 <p className="text-sm text-gray-500">
                                     It would take a few minutes for it to appear on Metamask
@@ -135,6 +135,7 @@ function WithdrawPayment(props: Props) {
                                     <button 
                                         type="button" 
                                         className="inline-flex justify-center rounded-md border border-transparent bg-green-100 px-4 py-2 text-sm font-medium text-green-900 hover:bg-green-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 mt-2"
+                                        onClick={onClose}
                                     >
                                         OK
                                     </button>
