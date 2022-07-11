@@ -3,10 +3,10 @@ A self-study project to create a marketplace on ethereum
 
 ## Table of Contents
 
-- [1. About the Project](#1.-about-the-project)
-- [2. Features](#2.-features)
-- [3. Deployment (Local)](#3.-deployment-(local))
-- [4. Deployment (Dockerized)](#4.-deployment-(dockerized))
+- [1. About the Project](#1-about-the-project)
+- [2. Features](#2-features)
+- [3. Deployment (Local)](#3-deployment-local)
+- [4. Deployment (Dockerized)](#4-deployment-dockerized)
 
 ## 1. About the Project
 
@@ -74,6 +74,14 @@ Create a new database user, `marketplace_user` and randomly generate a `password
 On the left panel, click on **Database**. On your cluster, click **Connect** > **Connect your application**. Set the `DRIVER - Node.js` and `VERSION - 4.1 or later`. Note down the `mongodb+srv://<username>...`.
 
 Lastly, click on **Network Access** > **IP Access List** > **Add IP Address**. On the **Access List Entry** input field, enter `0.0.0.0/0`. This allows any IP address to access the mongo db cloud.
+
+
+At the end, you should have record down these variables. If you have missed any refer to the above steps again:
+```
+database username
+database password
+mongodb cluster url
+```
 
 ### 3.3 Configure Pinata
 
