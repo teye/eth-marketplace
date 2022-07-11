@@ -7,7 +7,8 @@ import { MARKETPLACE_HUMAN_ABI } from "../abi/marketplaceHumanABI";
 import { PROGRESS } from "../constants";
 import { CheckCircle } from "../icons/check-circle";
 import { Spinner } from "../icons/spinner";
-import { useAppSelector } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { UPDATE_BALANCE } from "../store/userSlice";
 import { formatTxDisplay } from "../utils";
 
 type Props = {
@@ -25,6 +26,7 @@ function WithdrawPayment(props: Props) {
     let marketplaceAddress = process.env.REACT_APP_MARKETPLACE_CONTRACT ?? "0x0";
 
     const userState = useAppSelector((state) => state.user);
+    const dispatch = useAppDispatch();
 
     const [isOpen, setIsOpen] = useState(false);
     const [progress, setProgress] = useState("");
@@ -55,9 +57,16 @@ function WithdrawPayment(props: Props) {
             const deployed = new ethers.Contract(marketplaceAddress, MARKETPLACE_HUMAN_ABI, signer);
 
             const tx = await deployed.withdrawPayment();
+
             console.log("tx: ", tx.hash);
             setProgress(PROGRESS.CONFIRM);
             setTxHash(tx.hash);
+
+            provider.getBalance(userState.wallet)
+                .then((result: any) => {
+                    const bal = ethers.utils.formatEther(result);
+                    dispatch(UPDATE_BALANCE(bal));
+                });
 
         } catch (err) {
             console.error(err);
