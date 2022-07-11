@@ -29,6 +29,7 @@ const fetchSalesDetails = async (
 
     let result = {
         listingDetails,
+        tokenURI: '',
         imgURI: '',
     }
 
@@ -49,6 +50,7 @@ const fetchSalesDetails = async (
         const nftDetails = await backend.getTokenInfo(_tokenAddress, _tokenId);
         const metadata = await axios.get(nftDetails.result.token_uri);
 
+        result.tokenURI = nftDetails.result.token_uri;
         result.imgURI = metadata.data.image
 
         listingDetails.tokenName = nftDetails.result.token_name ?? "";
@@ -157,8 +159,14 @@ function SaleDetails() {
                             Owned by <span className="text-blue-500">{data.listingDetails.seller.toLowerCase()}</span>
                         </div>
                         <div className="bg-white border border-gray-200 rounded-md p-4 bg-slate-50 my-4 text-[0.9em]">
-                            <h3 className="font-semibold text-gray-500">Contract</h3>
+                            <h3 className="font-semibold text-gray-500">Token Contract</h3>
                             <div className="font-semibold text-blue-500">{data.listingDetails.tokenAddress ?? ''}</div>
+                            <h3 className="font-semibold text-gray-500 mt-2">Token URI</h3>
+                            <div className="font-semibold text-blue-500 break-all">
+                                <a href={data.tokenURI} target="_blank" rel="noopener noreferrer">
+                                    {data.tokenURI ?? ''}
+                                </a>
+                            </div>
                         </div>
                         <div className="bg-white border border-gray-200 rounded-md p-4 bg-slate-50 mt-4 mb-8">
                             <h3 className="font-semibold text-zinc-400 text-[0.9em]">Current price</h3>

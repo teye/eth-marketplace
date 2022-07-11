@@ -22,6 +22,7 @@ const fetchNFTDetails = async (
     let result = {
         nftDetails,
         imgURI: '',
+        tokenURI: '',
     }
 
     const assetQueryArray = assetQuery?.split(":") ?? [];
@@ -40,7 +41,8 @@ const fetchNFTDetails = async (
 
         const metadata = await axios.get(tokenInfo.result.token_uri);
 
-        result.imgURI = metadata.data.image
+        result.imgURI = metadata.data.image;
+        result.tokenURI = tokenInfo.result.token_uri;
 
         nftDetails.tokenName = tokenInfo.result.token_name;
         nftDetails.tokenAddress = _tokenAddress;
@@ -82,8 +84,14 @@ function TokenDetails() {
                             Owned by <span className="text-blue-500">{data.nftDetails.owner ?? ''}</span>
                         </div>
                         <div className="bg-white border border-gray-200 rounded-md p-4 bg-slate-50 my-8 text-[0.9em]">
-                            <h3 className="font-semibold text-gray-500">Contract</h3>
+                            <h3 className="font-semibold text-gray-500">Token Contract</h3>
                             <div className="font-semibold text-blue-500">{data.nftDetails.tokenAddress ?? ''}</div>
+                            <h3 className="font-semibold text-gray-500 mt-2">Token URI</h3>
+                            <div className="font-semibold text-blue-500 break-all">
+                                <a href={data.tokenURI} target="_blank" rel="noopener noreferrer">
+                                    {data.tokenURI ?? ''}
+                                </a>
+                            </div>
                         </div>
                         {/* since not listed, we can add sell button */}
                         <SellListing
