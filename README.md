@@ -9,7 +9,16 @@ A self-study project to create a marketplace on ethereum
 - [1. About the Project](#1-about-the-project)
 - [2. Features](#2-features)
 - [3. Deployment (Local)](#3-deployment-local)
+  - [3.1 Deploy Marketplace Contract](#31-deploy-marketplace-contract)
+  - [3.2 Configure MongoDB Atlas](#32-configure-mongodb-atlas)
+  - [3.3 Configure Pinata](#33-configure-pinata)
+  - [3.4 Configure and Deploy Backend](#34-configure-and-deploy-backend)
+  - [3.5 Configure and Deploy Frontend](#35-configure-and-deploy-frontend)
 - [4. Deployment (Dockerized)](#4-deployment-dockerized)
+  - [4.1 Deploy Marketplace Contract](#41-deploy-marketplace-contract)
+  - [4.2 Configure Database and Pinata](#42-configure-database-and-pinata)
+  - [4.3 Run Backend](#43-run-backend)
+  - [4.4 Run Frontend](#44-run-frontend)
 
 ## 1. About the Project
 
@@ -62,6 +71,8 @@ cd bash_scripts
 
 Note down the deployed marketplace contract address. If this is the first deployment, the contract address should be `0x5FbDB2315678afecb367f032d93F642f64180aa3`.
 
+Leave the hardhat node running!.
+
 ### 3.2 Configure MongoDB Atlas
 
 Head to [https://www.mongodb.com/](https://www.mongodb.com/) and create a free MongoDB project on Atlas.
@@ -97,8 +108,7 @@ We do not require admin access for the API key, configure the API key with these
 ```
 Pinning - pinFileToIPFS
 Pinning - pinJSONToIPFS
-Pinning - addpinobject
-Pinning - getpinobject
+Pinning Service API - addPinObject
 ```
 
 When prompted, note down the `API_KEY` and `API_SECRET`.
@@ -168,3 +178,62 @@ You should see this homepage:
 
 
 ## 4. Deployment (Dockerized)
+
+### 4.1 Deploy Marketplace Contract
+
+Now, for simplicity and testing, we will run a local ethereum node via `hardhat` and deploy our marketplace contract.
+
+Refer to [3.1 Deploy Marketplace Contract](#31-deploy-marketplace-contract) for details.
+
+Remember not to close the local hardhat node.
+
+### 4.2 Configure Database and Pinata
+
+Refer to [3.2 Configure MongoDB Atlas](#32-configure-mongodb-atlas) and [3.3 Configure Pinata](#33-configure-pinata) and note down the important env variables.
+
+### 4.3 Run Backend
+
+Create a `.env.` file under `backend` folder:
+
+```
+cd backend
+
+vi .env
+
+DB_URL=mongodb+srv://marketplace_user:<password>@<cluster_url>
+PORT=5000
+PINATA_API_KEY=<API_KEY>
+PINATA_SECRET_KEY=<API_SECRET>
+```
+
+Run the docker file:
+
+```
+docker build -t marketplace-backend .
+docker run -dp 5000:5000 marketplace-backend
+```
+
+### 4.4 Run Frontend
+
+Create a `.env` file under `frontend` folder:
+
+```
+cd frontend
+
+vi .env
+
+REACT_APP_MARKETPLACE_CONTRACT=<Step 3.1, e.g. 0x5FbDB2315678afecb367f032d93F642f64180aa3>
+REACT_APP_BACKEND_URL=http://localhost
+REACT_APP_BACKEND_PORT=5000
+REACT_APP_ETH_PROVIDER=http://localhost:8545
+```
+
+Run the docker file:
+
+```
+docker build -t marketplace-ui .
+docker run -dp 3000:3000 marketplace-ui
+```
+
+Browse the app at http://localhost:3000.
+
