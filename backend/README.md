@@ -9,11 +9,11 @@ Routes relating to NFT listing details.
 #### GET `/listings/`
 
 **Description**
-
+<br>
 Retrieves the list of nfts sold on the marketplace.
 
 **Request Body**
-
+<br>
 N/A
 
 <details>
