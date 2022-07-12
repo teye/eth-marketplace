@@ -17,9 +17,8 @@ Retrieves the list of nfts sold on the marketplace.
 N/A
 
 <details>
-    <summary>**Sample Response**</summary>
+    <summary><b>Sample Response</b></summary>
 
-    ```
     {
         success: true,
         result: [
@@ -34,7 +33,6 @@ N/A
             }
         ]
     }
-    ```
 </details>
 
 ---
