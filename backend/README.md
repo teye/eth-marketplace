@@ -11,6 +11,12 @@
   - [Update listing](#put-listings0x_token_addresstoken_id)
 - Minting
 - Tokens
+  - [Get all nfts](#get-tokens)
+  - [Get all nfts minted by a wallet](#get-tokensminted0x_wallet)
+  - [Get all nfts owned by a wallet](#get-tokensowned0x_token_addresstoken_id)
+  - [Get nft details by token address and token id pair](#get-tokens0x_token_addresstoken_id)
+  - [Add a newly minted nft](#post-tokens)
+  - [Update nft details](#put-tokens0x_tokena_ddresstoken_id)
 
 
 ### `listings`
@@ -371,7 +377,7 @@ N/A
 
 ---
 
-#### GET `/tokens/owned/<0x_token_address>/<0x_token_id>`
+#### GET `/tokens/owned/<0x_token_address>/<token_id>`
 
 **Description**
 <br>
@@ -451,7 +457,7 @@ Add a newly minted NFT.
 
 ---
 
-#### PUT `/tokens/<0x_token_address>/<0x_token_id>`
+#### PUT `/tokens/<0x_token_address>/<token_id>`
 
 **Description**
 <br>
