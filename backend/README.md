@@ -10,6 +10,7 @@
   - [Add listing](#post-listings)
   - [Update listing](#put-listings0x_token_addresstoken_id)
 - **Minting**
+  - [Upload image and metadata to IPFS](#post-minting)
 - **Tokens**
   - [Get all nfts](#get-tokens)
   - [Get all nfts minted by a wallet](#get-tokensminted0x_wallet)
@@ -289,17 +290,7 @@ Multipart Form
 | files | <filename.jpg> | Auto | User uploaded file in Blob format |
 | name | <nft_name> | Auto | Name of the NFT |
 | description | <nft_description> | Auto | Description of the NFT |
-| attributes | 
-``` 
-[
-    {
-        "trait_type": "",
-        "value": "",
-    }
-]
-```
-| application/json | NFT metadata |
-
+| attributes | ```[{ "trait_type": "", "value": "" }]``` | application/json | NFT metadata |
 
 <details>
     <summary><b>Sample Response</b></summary>
