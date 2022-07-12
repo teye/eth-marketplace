@@ -2,15 +2,15 @@
 
 ## API Routes
 
-- Listings
+- **Listings**
   - [Get all listings](#get-listings)
   - [Get a specific listings by token address and token id pair](#get-listings0x_token_addresstoken_id)
   - [Get all the listings listed by a seller](#get-listings0x_seller)
   - [Delete listing](#delete-listings0x_token_addresstoken_id)
   - [Add listing](#post-listings)
   - [Update listing](#put-listings0x_token_addresstoken_id)
-- Minting
-- Tokens
+- **Minting**
+- **Tokens**
   - [Get all nfts](#get-tokens)
   - [Get all nfts minted by a wallet](#get-tokensminted0x_wallet)
   - [Get all nfts owned by a wallet](#get-tokensowned0x_token_addresstoken_id)
@@ -272,6 +272,47 @@ Updates the price of the listed NFT.
 ---
 
 ### `minting`
+
+Routes relating to uploading NFT and its metadata to a decentralized storage.
+
+#### POST `/minting`
+
+**Description**
+<br>
+Uploads the user image and metadata to IPFS.
+
+**Request Body**
+<br>
+Multipart Form
+|  Key  |  Value | Content Type | Description |
+| ------ | ----- | -------- | ----------- |
+| files | <filename.jpg> | Auto | User uploaded file in Blob format |
+| name | <nft_name> | Auto | Name of the NFT |
+| description | <nft_description> | Auto | Description of the NFT |
+| attributes | ``` 
+[
+    {
+        "trait_type": "",
+        "value": "",
+    }
+]
+```
+| application/json | NFT metadata |
+
+
+<details>
+    <summary><b>Sample Response</b></summary>
+
+    {
+        "success": true,
+        "result": {
+            "imgIPFSHash": "QmdwUTgYuvApiWvytVszNtadcg8W899M4VwMVReDYNbkZT",
+            "metadataIPFSHash": "QmXVkJPTMFk7mXVk9M3npDnf1KeF3aRqELq4dqeTGkQWda"
+        }
+    }
+</details>
+
+---
 
 
 ### `tokens`
