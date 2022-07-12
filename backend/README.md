@@ -289,7 +289,8 @@ Multipart Form
 | files | <filename.jpg> | Auto | User uploaded file in Blob format |
 | name | <nft_name> | Auto | Name of the NFT |
 | description | <nft_description> | Auto | Description of the NFT |
-| attributes | ``` 
+| attributes | 
+``` 
 [
     {
         "trait_type": "",
