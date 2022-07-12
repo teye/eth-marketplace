@@ -97,7 +97,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"token_address\": \"0x123\",\n    \"token_id\": \"1\",\n    \"minter\": \"0xdeadbeef\",\n    \"owner\": \"0xdeadbeef\"\n}",
+							"raw": "{\n    \"token_address\": \"0x123\",\n    \"token_id\": \"1\",\n    \"token_name\": \"basic nft\",\n    \"token_uri\": \"http://api-metadata-url.com\",\n    \"minter\": \"0xdeadbeef\",\n    \"owner\": \"0xdeadbeef\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -216,8 +216,21 @@
 				{
 					"name": "Delete listing",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/listings/0x123/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"listings",
+								"0x123",
+								"1"
+							]
+						}
 					},
 					"response": []
 				},
@@ -289,6 +302,32 @@
 					"request": {
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": "/home/affinity/Pictures/apple.jpg"
+								},
+								{
+									"key": "name",
+									"value": "red_apple",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "a red apple",
+									"type": "default"
+								},
+								{
+									"key": "attributes",
+									"value": "[{ \"trait_type\": \"color'\", \"value\": \"red\" }]",
+									"contentType": "application/json",
+									"type": "default"
+								}
+							]
+						},
 						"url": {
 							"raw": "http://localhost:5000/minting",
 							"protocol": "http",
