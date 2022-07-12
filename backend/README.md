@@ -2,6 +2,16 @@
 
 ## API Routes
 
+- [Listings]
+  - [Get all listings](#get-listings)
+  - [Get a specific listings by token address and token id pair](#get-listings0x_token_addresstoken_id)
+  - [Get all the listings listed by a seller](#get-listings0xseller)
+  - [Delete listing](#delete-listings0x_token_addresstoken_id)
+  - [Add listing](#post-listings)
+  - [Update listing](#put-listings0x_token_addresstoken_id)
+- [Tokens]
+- [Minting]
+
 ### `listings`
 
 Routes relating to NFT listing details.
