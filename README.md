@@ -19,6 +19,7 @@ A self-study project to create a marketplace on ethereum
   - [4.2 Configure Database and Pinata](#42-configure-database-and-pinata)
   - [4.3 Run Backend](#43-run-backend)
   - [4.4 Run Frontend](#44-run-frontend)
+- [5. Screens](#5-screens)
 
 ## 1. About the Project
 
@@ -237,3 +238,22 @@ docker run -dp 3000:3000 marketplace-ui
 
 Browse the app at http://localhost:3000.
 
+## 5. Screens
+
+### Mint and List
+https://user-images.githubusercontent.com/6906654/178418663-cbce29d7-7ebb-482c-9627-ce1d01b4059a.mp4
+
+### Update Listing
+https://user-images.githubusercontent.com/6906654/178426868-29ff6339-ff50-4742-aa01-abbcd8570c22.mp4
+
+### Cancel Listing
+https://user-images.githubusercontent.com/6906654/178426935-db1b6729-95f0-4738-af13-d9f45136d6bc.mp4
+
+### Sell
+https://user-images.githubusercontent.com/6906654/178426970-55ad8c10-a84b-438d-8b5a-c46d893e13b2.mp4
+
+### Buy
+https://user-images.githubusercontent.com/6906654/178426991-9411d9a9-24f8-4c48-95df-44da00a4f7ff.mp4
+
+### Withdraw Profits
+https://user-images.githubusercontent.com/6906654/178427011-86d4fd89-9981-4434-b72f-202990ab66fe.mp4
