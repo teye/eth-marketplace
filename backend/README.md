@@ -13,7 +13,7 @@ Retrieves the list of nfts sold on the marketplace.
 N/A
 
 **Sample Response**
-```json
+```
 {
     success: true,
     result: [
