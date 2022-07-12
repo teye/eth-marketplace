@@ -16,7 +16,7 @@
   - [Get all nfts owned by a wallet](#get-tokensowned0x_token_addresstoken_id)
   - [Get nft details by token address and token id pair](#get-tokens0x_token_addresstoken_id)
   - [Add a newly minted nft](#post-tokens)
-  - [Update nft details](#put-tokens0x_tokena_ddresstoken_id)
+  - [Update nft details](#put-tokens0x_token_addresstoken_id)
 
 
 ### `listings`
@@ -377,7 +377,7 @@ N/A
 
 ---
 
-#### GET `/tokens/owned/<0x_token_address>/<token_id>`
+#### GET `/tokens/<0x_token_address>/<token_id>`
 
 **Description**
 <br>
