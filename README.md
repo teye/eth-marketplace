@@ -19,7 +19,8 @@ A self-study project to create a marketplace on ethereum
   - [4.2 Configure Database and Pinata](#42-configure-database-and-pinata)
   - [4.3 Run Backend](#43-run-backend)
   - [4.4 Run Frontend](#44-run-frontend)
-- [5. Screens](#5-screens)
+- [5. API Routes](#5-api-routes)
+- [6. Video Demo](#6-video-demo)
 
 ## 1. About the Project
 
@@ -238,7 +239,13 @@ docker run -dp 3000:3000 marketplace-ui
 
 Browse the app at http://localhost:3000.
 
-## 5. Screens
+## 5. API Routes
+
+The backend API routes can be viewed at [`/backend/README.md`](/backend/README.md).
+
+A Postman collection is also available at [`/backend`](/backend/marketplace.postman_collection.json).
+
+## 6. Video Demo
 
 ### Mint and List
 https://user-images.githubusercontent.com/6906654/178418663-cbce29d7-7ebb-482c-9627-ce1d01b4059a.mp4
