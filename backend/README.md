@@ -2,15 +2,16 @@
 
 ## API Routes
 
-- [Listings]
+- Listings
   - [Get all listings](#get-listings)
   - [Get a specific listings by token address and token id pair](#get-listings0x_token_addresstoken_id)
-  - [Get all the listings listed by a seller](#get-listings0xseller)
+  - [Get all the listings listed by a seller](#get-listings0x_seller)
   - [Delete listing](#delete-listings0x_token_addresstoken_id)
   - [Add listing](#post-listings)
   - [Update listing](#put-listings0x_token_addresstoken_id)
-- [Tokens]
-- [Minting]
+- Minting
+- Tokens
+
 
 ### `listings`
 
@@ -269,6 +270,248 @@ Updates the price of the listed NFT.
 
 ### `tokens`
 
+Routes relating to NFT token details.
+
+#### GET `/tokens`
+
+**Description**
+<br>
+Get all nfts minted on the marketplace.
+
+**Request Body**
+<br>
+N/A
+
+<details>
+    <summary><b>Sample Response</b></summary>
+
+    {
+        "success": true,
+        "result": [
+            {
+                "_id": "62cbe1f561b9acb975d60f29",
+                "token_address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+                "token_id": "1",
+                "token_name": "Apple",
+                "token_uri": "https://gateway.pinata.cloud/ipfs/QmS9aoTd5aXF42TQZhhbm6it3nXtgScrFqLneQhy7iSQbm",
+                "minter": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+                "owner": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+                "minted_date": "2022-07-11T08:40:21.736Z",
+                "modified_date": "2022-07-11T08:40:58.191Z"
+            }
+        ]
+    }
+</details>
+
+---
+
+#### GET `/tokens/minted/<0x_wallet>`
+
+**Description**
+<br>
+Get all nfts **minted** by a particular wallet.
+
+**Request Body**
+<br>
+N/A
+
+<details>
+    <summary><b>Sample Response</b></summary>
+
+    {
+        "success": true,
+        "result": [
+            {
+                "_id": "62cbe1f561b9acb975d60f29",
+                "token_address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+                "token_id": "1",
+                "token_name": "Apple",
+                "token_uri": "https://gateway.pinata.cloud/ipfs/QmS9aoTd5aXF42TQZhhbm6it3nXtgScrFqLneQhy7iSQbm",
+                "minter": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+                "owner": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+                "minted_date": "2022-07-11T08:40:21.736Z",
+                "modified_date": "2022-07-11T08:40:58.191Z"
+            }
+        ]
+    }
+</details>
+
+---
+
+#### GET `/tokens/owned/<0x_wallet>`
+
+**Description**
+<br>
+Get all nfts **owned** by a particular wallet.
+
+**Request Body**
+<br>
+N/A
+
+<details>
+    <summary><b>Sample Response</b></summary>
+
+    {
+        "success": true,
+        "result": [
+            {
+                "_id": "62cbe1f561b9acb975d60f29",
+                "token_address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+                "token_id": "1",
+                "token_name": "Apple",
+                "token_uri": "https://gateway.pinata.cloud/ipfs/QmS9aoTd5aXF42TQZhhbm6it3nXtgScrFqLneQhy7iSQbm",
+                "minter": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+                "owner": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+                "minted_date": "2022-07-11T08:40:21.736Z",
+                "modified_date": "2022-07-11T08:40:58.191Z"
+            }
+        ]
+    }
+</details>
+
+---
+
+#### GET `/tokens/owned/<0x_token_address>/<0x_token_id>`
+
+**Description**
+<br>
+Get nft details by token address and token id pair.
+
+**Request Params**
+|  Name  |  Type | Required | Description |
+| ------ | ----- | -------- | ----------- |
+| token_address | String | Yes | NFT token address in Base16 format |
+| token_id | String | Yes | NFT token ID |
+
+**Request Body**
+<br>
+N/A
+
+<details>
+    <summary><b>Sample Response</b></summary>
+
+    {
+        "success": true,
+        "result": [
+            {
+                "_id": "62cbe1f561b9acb975d60f29",
+                "token_address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+                "token_id": "1",
+                "token_name": "Apple",
+                "token_uri": "https://gateway.pinata.cloud/ipfs/QmS9aoTd5aXF42TQZhhbm6it3nXtgScrFqLneQhy7iSQbm",
+                "minter": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+                "owner": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+                "minted_date": "2022-07-11T08:40:21.736Z",
+                "modified_date": "2022-07-11T08:40:58.191Z"
+            }
+        ]
+    }
+</details>
+
+---
+
+#### POST `/tokens`
+
+**Description**
+<br>
+Add a newly minted NFT.
+
+**Request Body**
+```
+{
+    "token_address": "<0x_nft_token_address>",
+    "token_id": "<nft_token_id>",
+    "token_name": "<nft_name>",
+    "token_uri": "<nft-metadata-url or image url>",
+    "minter": "<0x_minter_address>",
+    "owner": "<0x_owner_address>"
+}
+```
+
+<details>
+    <summary><b>Sample Response</b></summary>
+
+    {
+        "success": true,
+        "result": [
+            {
+                "_id": "62cbe1f561b9acb975d60f29",
+                "token_address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+                "token_id": "1",
+                "token_name": "Apple",
+                "token_uri": "https://gateway.pinata.cloud/ipfs/QmS9aoTd5aXF42TQZhhbm6it3nXtgScrFqLneQhy7iSQbm",
+                "minter": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+                "owner": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+                "minted_date": "2022-07-11T08:40:21.736Z",
+                "modified_date": "2022-07-11T08:40:58.191Z"
+            }
+        ]
+    }
+</details>
+
+---
+
+#### PUT `/tokens/<0x_token_address>/<0x_token_id>`
+
+**Description**
+<br>
+Update the token entry, e.g updating the owner when it changed hands
+
+**Request Params**
+|  Name  |  Type | Required | Description |
+| ------ | ----- | -------- | ----------- |
+| token_address | String | Yes | NFT token address in Base16 format |
+| token_id | String | Yes | NFT token ID |
+
+**Request Body**
+```
+{
+    "owner": "0xnewowner"
+}
+```
+
+<details>
+    <summary><b>Sample Response</b></summary>
+
+    {
+        "success": true,
+        "result": {
+            "lastErrorObject": {
+                "n": 1,
+                "updatedExisting": true
+            },
+            "value": {
+                "_id": "62cd2577bda884afe6f3401c",
+                "token_address": "0x123",
+                "token_id": "1",
+                "token_name": "basic nft",
+                "token_uri": "http://api-metadata-url.com",
+                "minter": "0xdeadbeef",
+                "owner": "0xdeadbeef",
+                "minted_date": "2022-07-12T07:40:39.370Z",
+                "modified_date": "2022-07-12T07:40:39.370Z"
+            },
+            "ok": 1,
+            "$clusterTime": {
+                "clusterTime": {
+                    "$timestamp": "7119388487643562011"
+                },
+                "signature": {
+                    "hash": "f+9RkILo2hnXfE0x3wBArPiQWu0=",
+                    "keyId": {
+                        "low": 11,
+                        "high": 1643310689,
+                        "unsigned": false
+                    }
+                }
+            },
+            "operationTime": {
+                "$timestamp": "7119388487643562011"
+            }
+        }
+    }
+</details>
+
 
 #### GET `/listings/<0x_token_address>/<token_id>`
 
@@ -281,4 +524,14 @@ Updates the price of the listed NFT.
 <br>
 N/A
 
-**Sample Response**
+<details>
+    <summary><b>Sample Response</b></summary>
+
+    {
+        "success": true,
+        "result": {
+            "acknowledged": true,
+            "insertedId": "62cd2189bda884afe6f3401b"
+        }
+    }
+</details>
